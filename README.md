@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tela website
 
-## Getting Started
+The public site for Tela: the landing page (features, how it works, why Tela, FAQ, store links)
+and the landing page for group invite links, `/g/:code`.
 
-First, run the development server:
+## Invite links
+
+`https://<site>/g/CODE` is the link the app shares. With Tela installed, iOS (Universal Links)
+and Android (App Links) open the app straight to the join screen. Otherwise this site shows the
+group's name and picture (from the API's public preview), the code, and the store buttons.
+
+For the OS to hand these links to the app, this site serves:
+
+- `/.well-known/apple-app-site-association`, from `IOS_APP_ID` (Team ID + bundle ID)
+- `/.well-known/assetlinks.json`, from `ANDROID_PACKAGE` and `ANDROID_SHA256_FINGERPRINTS`
+
+Both answer 404 until those are set. The app declares the same domain (`EXPO_PUBLIC_SITE_URL` in
+the app's `app.config.ts`).
+
+## Setup
 
 ```bash
+cp .env.example .env.local   # fill in the store URLs and app identifiers
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Photos are Pexels placeholders, listed in `src/lib/site.ts` (`photos`). Replace them there.

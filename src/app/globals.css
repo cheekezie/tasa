@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Tela's colours, from the app (constants/theme.ts), so the site and app feel like one product. */
+@theme {
+  --color-brand: #0A4D3C;
+  --color-brand-deep: #063328;
+  --color-brand-light: #127A5E;
+  --color-accent: #F4A524;
+  --color-accent-hot: #E85D04;
+  --color-gold: #EBBD00;
+  --color-surface: #FAF8F4;
+  --color-card: #FFFFFF;
+  --color-ink: #1A1A18;
+  --color-ink-muted: #6B6860;
+  --color-ink-subtle: #9C9890;
+  --color-line: #E8E4DC;
+  --color-track: #F0ECE4;
+  --color-mint: #E6F2EE;
+
+  --font-sans: var(--font-sora), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-brand-deep);
+}
+
+/* FAQ answers open with the native <details>; keep the marker ours. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
