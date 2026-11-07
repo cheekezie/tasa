@@ -135,7 +135,7 @@ function SellerBody({ seller, onStale }: { seller: SellerDetail; onStale: () => 
               />
               <DetailRow label="NIN" value={user.ninLast4 ? <span className="font-mono text-xs">•••• {user.ninLast4}</span> : "Not added"} />
               <DetailRow label="Account" value={<UserStatusBadge status={user.status} />} />
-              <DetailRow label="On Tela since" value={date(user.joinedAt)} />
+              <DetailRow label="On Tasa since" value={date(user.joinedAt)} />
             </Rows>
           ) : (
             <p className="text-sm text-grey-500">The user account behind this organiser wasn't found.</p>
@@ -343,7 +343,7 @@ function SellerEvents({ sellerId }: { sellerId: string }) {
                 </span>
                 <StatusBadge
                   variant={e.sales === "on_sale" ? "success" : e.sales === "ended" ? "closed" : e.adminPaused ? "error" : "warning"}
-                  label={e.sales === "paused" ? (e.adminPaused ? "Paused by Tela" : "Paused") : titleCase(e.sales)}
+                  label={e.sales === "paused" ? (e.adminPaused ? "Paused by Tasa" : "Paused") : titleCase(e.sales)}
                 />
               </div>
             </li>

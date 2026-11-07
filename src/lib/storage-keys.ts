@@ -1,4 +1,4 @@
 export const STORAGE_KEYS = {
-  AUTH_STORE: "tela-admin:auth",
-  UI_STORE: "tela-admin:ui",
+  AUTH_STORE: "tasa-admin:auth",
+  UI_STORE: "tasa-admin:ui",
 } as const;

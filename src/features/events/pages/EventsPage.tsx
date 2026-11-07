@@ -28,7 +28,7 @@ const FILTERS: FilterConfig[] = [
     options: [
       { label: "On sale", value: "on_sale" },
       { label: "Paused (anyone)", value: "paused" },
-      { label: "Paused by Tela", value: "tela_paused" },
+      { label: "Paused by Tasa", value: "tasa_paused" },
       { label: "Ended", value: "ended" },
     ],
   },
@@ -43,13 +43,13 @@ function SalesCell({ event }: { event: AdminEvent }) {
     <div className="space-y-1">
       <StatusBadge variant={event.adminPaused ? "error" : "warning"} label="Paused" />
       <p className="text-xs text-grey-400">
-        {event.adminPaused && event.salesPaused ? "By Tela and the organiser" : event.adminPaused ? "By Tela" : "By the organiser"}
+        {event.adminPaused && event.salesPaused ? "By Tasa and the organiser" : event.adminPaused ? "By Tasa" : "By the organiser"}
       </p>
     </div>
   );
 }
 
-/** Every ticketed event, with what it has sold. Staff can stop sales on an event as Tela. */
+/** Every ticketed event, with what it has sold. Staff can stop sales on an event as Tasa. */
 export default function EventsPage() {
   const canPause = useCan("support", "finance");
   // The organiser page links here as `?owner=<id>`; there's no picker, only a removable chip.
@@ -121,7 +121,7 @@ export default function EventsPage() {
         cell: ({ row }) =>
           canPause && row.original.sales !== "ended" ? (
             <Button size="sm" variant={row.original.adminPaused ? "outline" : "destructive"} onClick={() => confirmSales(row.original)}>
-              {row.original.adminPaused ? "Lift Tela pause" : "Pause sales"}
+              {row.original.adminPaused ? "Lift Tasa pause" : "Pause sales"}
             </Button>
           ) : null,
       },
@@ -167,7 +167,7 @@ export default function EventsPage() {
   );
 }
 
-/** Tela's pause sits on top of the organiser's: they can't lift it, and lifting it doesn't lift theirs. */
+/** Tasa's pause sits on top of the organiser's: they can't lift it, and lifting it doesn't lift theirs. */
 function useConfirmSales() {
   const { mutateAsync } = useSetEventSales();
   const navigate = useNavigate();
@@ -177,7 +177,7 @@ function useConfirmSales() {
   return useCallback((event: AdminEvent) => {
     const pausing = !event.adminPaused;
     ask({
-      title: pausing ? "Pause ticket sales as Tela?" : "Lift Tela's pause?",
+      title: pausing ? "Pause ticket sales as Tasa?" : "Lift Tasa's pause?",
       variant: pausing ? "warning" : "primary",
       confirmText: pausing ? "Pause sales" : "Lift pause",
       description: (
@@ -187,8 +187,8 @@ function useConfirmSales() {
           </p>
           {pausing ? (
             <>
-              <p>Nobody can buy tickets for this event until Tela lifts the pause. Tickets already sold stay valid and check-in carries on.</p>
-              <p>The organiser can pause and resume their own sales, but they can't undo a Tela pause. Only staff can lift it here.</p>
+              <p>Nobody can buy tickets for this event until Tasa lifts the pause. Tickets already sold stay valid and check-in carries on.</p>
+              <p>The organiser can pause and resume their own sales, but they can't undo a Tasa pause. Only staff can lift it here.</p>
             </>
           ) : (
             <p>
@@ -202,7 +202,7 @@ function useConfirmSales() {
       onConfirm: async () => {
         const e = await mutateAsync({ id: event.id, paused: pausing });
         return {
-          message: pausing ? `Sales paused on ${e.title}` : e.salesPaused ? "Tela pause lifted. The organiser's own pause still applies." : `${e.title} is on sale again`,
+          message: pausing ? `Sales paused on ${e.title}` : e.salesPaused ? "Tasa pause lifted. The organiser's own pause still applies." : `${e.title} is on sale again`,
         };
       },
       onError: (err) => {

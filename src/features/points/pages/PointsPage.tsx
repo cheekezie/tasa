@@ -20,7 +20,7 @@ import { useCan } from "@/stores";
 /** A small transfer: the cheapest charge a looping transfer would pay. */
 const SAMPLE_TRANSFER = 10_000;
 
-/** How points are earned and what they're worth, and what Tela still owes in unconverted points. */
+/** How points are earned and what they're worth, and what Tasa still owes in unconverted points. */
 export default function PointsPage() {
   const query = usePoints();
   const data = query.data;

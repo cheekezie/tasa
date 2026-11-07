@@ -150,7 +150,7 @@ function Maintenance({ active, message, until, startedAt }: { active: boolean; m
             <>
               <div className="space-y-1.5">
                 <Label htmlFor="mm-message">Message (optional)</Label>
-                <Textarea id="mm-message" maxLength={200} placeholder="We're making Tela better. We'll be back shortly." value={draft} onChange={(e) => setDraft(e.target.value)} />
+                <Textarea id="mm-message" maxLength={200} placeholder="We're making Tasa better. We'll be back shortly." value={draft} onChange={(e) => setDraft(e.target.value)} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="mm-until">Expected back (optional, only shown)</Label>

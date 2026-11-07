@@ -21,7 +21,7 @@ const AuthLayout = () => (
         <Outlet />
       </div>
       <p className="text-xs text-grey-300">
-        For Tela staff only. Activity on this site is logged.
+        For Tasa staff only. Activity on this site is logged.
       </p>
     </div>
 
@@ -33,7 +33,7 @@ const AuthLayout = () => (
 function BrandPanel() {
   return (
     <aside className="relative hidden overflow-hidden bg-[linear-gradient(160deg,#055a4e_0%,#03463d_45%,#022a25_100%)] md:col-span-5 md:flex md:flex-col lg:col-span-6">
-      {/* The T, huge and faint, so the panel is unmistakably Tela without shouting it. */}
+      {/* The T, huge and faint, so the panel is unmistakably Tasa without shouting it. */}
       <img
         src={BRAND.iconUrl}
         alt=""

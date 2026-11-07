@@ -1,6 +1,6 @@
-# Tela Admin
+# Tasa Admin
 
-The back office for [Tela](../tela), on the [Tela API](../tela-api). Staff sign in with the email and password a
+The back office for [Tasa](../tela), on the [Tasa API](../tela-api). Staff sign in with the email and password a
 super admin gives them; what each role can see and do matches the API's own checks.
 
 Vite · React 19 · TypeScript · Tailwind 4 · shadcn/Radix · React Router 7 · TanStack Query and Table · Zustand.
@@ -21,7 +21,7 @@ from the API's `npm run seed` (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`); crea
 | Role        | Can                                                                                                                                 |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | super_admin | Everything, including staff and maintenance mode                                                                                    |
-| finance     | Money: charges, promotions, Tela coupons, P&L, ledger and VTpass top-ups, resolving stuck payments, audit log                       |
+| finance     | Money: charges, promotions, Tasa coupons, P&L, ledger and VTpass top-ups, resolving stuck payments, audit log                       |
 | support     | Users (suspend/reactivate), suspending organisers, requeries, missed collections, pausing coupons and event sales, feature switches |
 | compliance  | BVN review and reveal; reviewing organisers' photo and ID (each document view is logged) and suspending them                        |
 
@@ -43,4 +43,4 @@ Money is integer kobo everywhere, as in the API: show it with `naira()`, send ty
 npm run typecheck && npm run lint && npm run build
 ```
 
-super@tela.dev
+super@tasa.dev

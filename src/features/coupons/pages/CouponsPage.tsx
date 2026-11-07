@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useCoupons, type AdminCoupon, type CouponFilters } from "@/features/coupons/api";
-import { CreateTelaCouponDialog } from "@/features/coupons/components/CreateTelaCouponDialog";
+import { CreateTasaCouponDialog } from "@/features/coupons/components/CreateTasaCouponDialog";
 import { statusVariant } from "@/features/coupons/money";
 import { count, date, naira, titleCase } from "@/lib/format";
 import appRoutes, { toPath } from "@/routes/appRoutes";
@@ -16,7 +16,7 @@ import { useCan } from "@/stores";
 
 const FILTERS: FilterConfig[] = [
   { type: "select", key: "kind", label: "Kind", options: [{ label: "Giveaways", value: "coupon" }, { label: "Gifts", value: "gift" }] },
-  { type: "select", key: "fundedBy", label: "Paid by", options: [{ label: "Tela", value: "tela" }, { label: "Users", value: "user" }] },
+  { type: "select", key: "fundedBy", label: "Paid by", options: [{ label: "Tasa", value: "tasa" }, { label: "Users", value: "user" }] },
   {
     type: "select",
     key: "status",
@@ -54,9 +54,9 @@ const columns: ColumnDef<AdminCoupon, unknown>[] = [
     id: "fundedBy",
     header: "Paid by",
     cell: ({ row }) =>
-      row.original.fundedBy === "tela" ? (
+      row.original.fundedBy === "tasa" ? (
         <div className="space-y-0.5">
-          <StatusBadge variant="info" label="Tela" />
+          <StatusBadge variant="info" label="Tasa" />
           {row.original.createdByName && <p className="max-w-36 truncate text-xs text-grey-400">by {row.original.createdByName}</p>}
         </div>
       ) : row.original.owner ? (
@@ -75,8 +75,8 @@ const columns: ColumnDef<AdminCoupon, unknown>[] = [
     header: "Left",
     cell: ({ row }) => {
       const s = row.original.stats;
-      return row.original.fundedBy === "tela" ? (
-        <span title="What it could still cost Tela">{naira(s.exposureLeft)} exposure</span>
+      return row.original.fundedBy === "tasa" ? (
+        <span title="What it could still cost Tasa">{naira(s.exposureLeft)} exposure</span>
       ) : (
         <span title="The owner's money still in the pool">{naira(s.poolLeft)} in pool</span>
       );
@@ -96,7 +96,7 @@ const columns: ColumnDef<AdminCoupon, unknown>[] = [
   { id: "expiresAt", header: "Expires", cell: ({ row }) => <span className="whitespace-nowrap">{date(row.original.expiresAt)}</span> },
 ];
 
-/** Every coupon and gift, from users and from Tela, with what each has cost or still holds. */
+/** Every coupon and gift, from users and from Tasa, with what each has cost or still holds. */
 export default function CouponsPage() {
   const canCreate = useCan("finance");
   const [creating, setCreating] = useState(false);
@@ -108,12 +108,12 @@ export default function CouponsPage() {
     <>
       <PageHeader
         title="Giveaways & gifts"
-        subtitle="Codes made by users and giveaways paid for by Tela."
+        subtitle="Codes made by users and giveaways paid for by Tasa."
         actions={
           canCreate
             ? [
                 <Button key="new" onClick={() => setCreating(true)}>
-                  New Tela giveaway
+                  New Tasa giveaway
                 </Button>,
               ]
             : []
@@ -135,7 +135,7 @@ export default function CouponsPage() {
         filterConfigs={FILTERS}
         searchPlaceholder="Find by exact code"
       />
-      <CreateTelaCouponDialog open={creating} onOpenChange={setCreating} />
+      <CreateTasaCouponDialog open={creating} onOpenChange={setCreating} />
     </>
   );
 }

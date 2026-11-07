@@ -35,7 +35,7 @@ export default function OverviewPage() {
 
   return (
     <>
-      <PageHeader title="Dashboard" subtitle="What needs attention, and how Tela is doing." actions={[<PeriodTabs key="period" value={period} onChange={setPeriod} />]} />
+      <PageHeader title="Dashboard" subtitle="What needs attention, and how Tasa is doing." actions={[<PeriodTabs key="period" value={period} onChange={setPeriod} />]} />
 
       {query.isError && <LoadFailed error={query.error} onRetry={() => query.refetch()} />}
       {query.isPending && (

@@ -4,8 +4,8 @@ import type { ServiceId } from "@/features/coupons/money";
 
 export type CouponStatus = "active" | "paused" | "expired" | "cancelled";
 
-/** Tela coupons cost Tela as they're used; user coupons hold the owner's money in a pool. */
-type TelaStats = { cost: number; maxExposure: number; exposureLeft: number };
+/** Tasa coupons cost Tasa as they're used; user coupons hold the owner's money in a pool. */
+type TasaStats = { cost: number; maxExposure: number; exposureLeft: number };
 type UserStats = { poolLeft: number };
 
 /** GET /admin/coupons(/:id). Kobo throughout. */
@@ -13,7 +13,7 @@ export type AdminCoupon = {
   id: string;
   code: string;
   kind: "coupon" | "gift";
-  fundedBy: "user" | "tela";
+  fundedBy: "user" | "tasa";
   title: string;
   description: string | null;
   services: ServiceId[] | "all";
@@ -31,18 +31,18 @@ export type AdminCoupon = {
   message: string | null;
   isOwner: boolean;
   myBalance: null;
-  /** The user who paid for it; null for Tela's. */
+  /** The user who paid for it; null for Tasa's. */
   owner: string | null;
   ownerName: string | null;
-  /** The admin who made a Tela giveaway. */
+  /** The admin who made a Tasa giveaway. */
   createdBy: string | null;
   createdByName: string | null;
   /** Closed to new claims (claimants keep their balance), or cancelled outright. */
   closed: boolean;
   closedAt: string | null;
-  /** `name` is what the sender typed; `userName` is the Tela account it reached, once they've joined. */
+  /** `name` is what the sender typed; `userName` is the Tasa account it reached, once they've joined. */
   recipient: { label: string; name: string | null; user: string | null; userName: string | null } | null;
-  stats: { claims: number; uses: number; used: number } & Partial<TelaStats> & Partial<UserStats>;
+  stats: { claims: number; uses: number; used: number } & Partial<TasaStats> & Partial<UserStats>;
 };
 
 /** One person's claim. Kobo; `allowance`/`left` are null for promos (uses only, no balance). */
@@ -65,8 +65,8 @@ export type CouponFilters = { kind: string; fundedBy: string; status: string };
 
 type Recipient = { type: "username" | "phone" | "email"; value: string };
 
-/** POST /admin/coupons, Tela-funded. */
-export type TelaCouponInput =
+/** POST /admin/coupons, Tasa-funded. */
+export type TasaCouponInput =
   | { kind: "coupon"; title: string; description?: string; amount: number; quantity: number; services?: ServiceId[] | "all"; code?: string; expiresAt: string }
   | { kind: "gift"; title: string; description?: string; amount: number; recipient: Recipient; recipientName?: string; message?: string; expiresAt: string };
 
@@ -80,10 +80,10 @@ export const useCoupons = (params: CouponFilters & { code: string; page: number;
 export const useCoupon = (id: string) =>
   useQuery({ queryKey: ["coupons", "detail", id], queryFn: () => api.get<AdminCouponDetail>(`/admin/coupons/${id}`) });
 
-export function useCreateTelaCoupon() {
+export function useCreateTasaCoupon() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (body: TelaCouponInput) => api.post<AdminCoupon>("/admin/coupons", body),
+    mutationFn: (body: TasaCouponInput) => api.post<AdminCoupon>("/admin/coupons", body),
     onSuccess: (coupon) => {
       client.setQueryData(["coupons", "detail", coupon.id], { ...coupon, claims: [] });
       void client.invalidateQueries({ queryKey: ["coupons", "list"] });

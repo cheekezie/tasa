@@ -82,7 +82,7 @@ http.interceptors.response.use(undefined, async (error: AxiosError<Envelope<unkn
   throw new ApiError(
     error.response?.status ?? 0,
     error.code === "ECONNABORTED" ? "TIMEOUT" : "NETWORK_ERROR",
-    error.response ? "Something went wrong. Try again." : "Can't reach the Tela API. Check your connection.",
+    error.response ? "Something went wrong. Try again." : "Can't reach the Tasa API. Check your connection.",
   );
 });
 

@@ -45,7 +45,7 @@ export function TopupForm() {
       description: (
         <div className="space-y-2">
           <p>
-            Adds <span className="font-medium text-grey-800">{naira(kobo)}</span> to the VTpass balance on Tela's books,{" "}
+            Adds <span className="font-medium text-grey-800">{naira(kobo)}</span> to the VTpass balance on Tasa's books,{" "}
             {from === "sayswitch" ? "taken from the SaySwitch balance" : "as an opening balance from outside"}.
           </p>
           {feeKobo > 0 && (
@@ -79,7 +79,7 @@ export function TopupForm() {
     <Panel title="Record a VTpass top-up">
       <form onSubmit={review} className="space-y-4">
         <p className="text-sm text-grey-500">
-          Make the transfer in the SaySwitch and VTpass dashboards first. This only updates Tela's books to match; it doesn't move money.
+          Make the transfer in the SaySwitch and VTpass dashboards first. This only updates Tasa's books to match; it doesn't move money.
         </p>
         <div className="space-y-1.5">
           <Label htmlFor="topup-amount">Amount (₦)</Label>

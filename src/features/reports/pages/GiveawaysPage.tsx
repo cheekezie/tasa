@@ -60,7 +60,7 @@ const columns: ColumnDef<GiveawayRow, unknown>[] = [
   },
 ];
 
-/** What Tela's own promotions, coupons and gifts have cost, and how much more they could. */
+/** What Tasa's own promotions, coupons and gifts have cost, and how much more they could. */
 export default function GiveawaysPage() {
   const [rangeKey, setRangeKey] = useState<RangeKey>("30d");
   const query = useGiveaways(rangeParams(rangeKey));
@@ -81,7 +81,7 @@ export default function GiveawaysPage() {
     <>
       <PageHeader
         title="Giveaways & promotions"
-        subtitle="Everything Tela pays for: promo discounts and its own giveaways and gifts."
+        subtitle="Everything Tasa pays for: promo discounts and its own giveaways and gifts."
         actions={[<RangeTabs key="range" value={rangeKey} onChange={setRangeKey} />]}
       />
       {query.isError && (

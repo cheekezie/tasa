@@ -79,7 +79,7 @@ function PromoForm({ promo, onCancel, onSaved }: { promo: Promotion | null; onCa
     if (!numericValue || numericValue <= 0) problems.value = valueType === "percent" ? "Enter a percentage" : "Enter an amount in naira";
     else if (valueType === "percent" && (!Number.isInteger(numericValue) || numericValue > 100)) problems.value = "A whole percentage from 1 to 100";
     if (valueType === "percent" && !cap) problems.maxDiscount = "Percentage promos need a cap per use";
-    if (!budgetKobo) problems.budget = "Enter the total Tela will spend";
+    if (!budgetKobo) problems.budget = "Enter the total Tasa will spend";
     if (!expiresAt) problems.expiresAt = "Choose when it ends";
     if (services !== "all" && services.length === 0) problems.services = "Pick at least one service, or every bill";
     setLocal(problems);
@@ -125,7 +125,7 @@ function PromoForm({ promo, onCancel, onSaved }: { promo: Promotion | null; onCa
       <DialogHeader>
         <DialogTitle className="text-base">{promo ? `Edit ${promo.code}` : "New promotion"}</DialogTitle>
         <DialogDescription>
-          A code Tela pays for. Every discount is booked as a cost{promo ? `; ${naira(promo.stats.spent)} spent so far, so the budget can't go lower` : ""}.
+          A code Tasa pays for. Every discount is booked as a cost{promo ? `; ${naira(promo.stats.spent)} spent so far, so the budget can't go lower` : ""}.
         </DialogDescription>
       </DialogHeader>
 
@@ -191,7 +191,7 @@ function PromoForm({ promo, onCancel, onSaved }: { promo: Promotion | null; onCa
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="amount">The bill amount</SelectItem>
-              <SelectItem value="fee">Only Tela's charges</SelectItem>
+              <SelectItem value="fee">Only Tasa's charges</SelectItem>
             </SelectContent>
           </Select>
         </FormField>

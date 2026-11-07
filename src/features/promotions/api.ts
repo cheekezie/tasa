@@ -33,7 +33,7 @@ export type Promotion = {
   id: string;
   code: string;
   kind: "promo";
-  fundedBy: "tela";
+  fundedBy: "tasa";
   title: string;
   description: string | null;
   services: ServiceId[] | "all";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useCreateTelaCoupon, type TelaCouponInput } from "@/features/coupons/api";
+import { useCreateTasaCoupon, type TasaCouponInput } from "@/features/coupons/api";
 import { FormField, NairaInput, ServicesPicker } from "@/features/coupons/components/FormBits";
 import { fieldErrors, koboFromInput, type ServiceId } from "@/features/coupons/money";
 import { count, naira } from "@/lib/format";
@@ -19,10 +19,10 @@ type RecipientType = "username" | "phone" | "email";
 const RECIPIENT_PLACEHOLDER: Record<RecipientType, string> = { username: "ada_lovelace", phone: "08031234567", email: "ada@example.com" };
 
 /**
- * A giveaway Tela pays for. Nothing moves now: each use is booked as a cost when it happens,
+ * A giveaway Tasa pays for. Nothing moves now: each use is booked as a cost when it happens,
  * so the ceiling (amount × people) is what this could cost at most.
  */
-export function CreateTelaCouponDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function CreateTasaCouponDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
@@ -35,7 +35,7 @@ export function CreateTelaCouponDialog({ open, onOpenChange }: { open: boolean; 
 
 function CreateForm({ onDone }: { onDone: () => void }) {
   const navigate = useNavigate();
-  const create = useCreateTelaCoupon();
+  const create = useCreateTasaCoupon();
   const [kind, setKind] = useState<Kind>("coupon");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -68,7 +68,7 @@ function CreateForm({ onDone }: { onDone: () => void }) {
       amount: amountKobo,
       expiresAt: new Date(expiresAt).toISOString(),
     };
-    const body: TelaCouponInput =
+    const body: TasaCouponInput =
       kind === "coupon"
         ? { kind, ...shared, quantity: Number(quantity), services, ...(code.trim() ? { code: code.trim().toUpperCase() } : {}) }
         : {
@@ -97,8 +97,8 @@ function CreateForm({ onDone }: { onDone: () => void }) {
       }}
     >
       <DialogHeader>
-        <DialogTitle className="text-base">New Tela giveaway</DialogTitle>
-        <DialogDescription>Paid for by Tela. Each use is booked as a cost when it happens.</DialogDescription>
+        <DialogTitle className="text-base">New Tasa giveaway</DialogTitle>
+        <DialogDescription>Paid for by Tasa. Each use is booked as a cost when it happens.</DialogDescription>
       </DialogHeader>
 
       <div className="inline-flex rounded-lg border border-grey-50 bg-white p-0.5">
@@ -153,11 +153,11 @@ function CreateForm({ onDone }: { onDone: () => void }) {
                 <SelectContent>
                   <SelectItem value="phone">Phone</SelectItem>
                   <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="username">Tela username</SelectItem>
+                  <SelectItem value="username">Tasa username</SelectItem>
                 </SelectContent>
               </Select>
             </FormField>
-            <FormField id="tc-rcpt" label="Recipient" error={errors["recipient.value"]} hint="Not on Tela yet? They're invited, and the gift waits for them.">
+            <FormField id="tc-rcpt" label="Recipient" error={errors["recipient.value"]} hint="Not on Tasa yet? They're invited, and the gift waits for them.">
               <Input id="tc-rcpt" value={recipientValue} error={!!errors["recipient.value"]} onChange={(e) => setRecipientValue(e.target.value)} placeholder={RECIPIENT_PLACEHOLDER[recipientType]} />
             </FormField>
           </div>
@@ -176,7 +176,7 @@ function CreateForm({ onDone }: { onDone: () => void }) {
 
       {amountKobo !== null && amountKobo > 0 && people > 0 && (
         <p className="rounded-lg bg-grey-25 p-3 text-sm text-grey-500">
-          Most this can cost Tela: <span className="font-medium text-grey-800">{naira(amountKobo * people)}</span>
+          Most this can cost Tasa: <span className="font-medium text-grey-800">{naira(amountKobo * people)}</span>
           {kind === "coupon" && ` (${naira(amountKobo)} × ${count(people)} people)`}.
           {kind === "gift" && " The recipient is told by SMS or email, and in the app."}
         </p>

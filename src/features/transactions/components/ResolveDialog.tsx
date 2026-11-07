@@ -14,12 +14,12 @@ type Outcome = "delivered" | "failed";
 function consequence(tx: TransactionDetail, outcome: Outcome, cost: number | null) {
   if (tx.kind === "group_payout") {
     return outcome === "delivered"
-      ? `Marks the withdrawal as received by the group's bank. The ${naira(tx.amount)} leaves Tela's SaySwitch balance for good.`
+      ? `Marks the withdrawal as received by the group's bank. The ${naira(tx.amount)} leaves Tasa's SaySwitch balance for good.`
       : `The withdrawal never left, so ${naira(tx.total)} (charge included) goes back to the group's balance and its executives can withdraw again.`;
   }
   if (tx.kind === "ticket_payout") {
     return outcome === "delivered"
-      ? `Marks the payout as received by the bank. The ${naira(tx.amount)} leaves Tela's SaySwitch balance for good and the seller is told it's paid.`
+      ? `Marks the payout as received by the bank. The ${naira(tx.amount)} leaves Tasa's SaySwitch balance for good and the seller is told it's paid.`
       : `The payout never left, so ${naira(tx.total)} (charge included) goes back to the seller's ticket wallet and they can withdraw again.`;
   }
   return outcome === "delivered"

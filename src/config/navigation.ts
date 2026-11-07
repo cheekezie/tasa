@@ -1,4 +1,4 @@
-import { ArrowLeftRight, BadgeCheck, BadgePercent, BookOpen, Building2, CalendarDays, Coins, FileClock, Gift, Landmark, LayoutDashboard, ListChecks, Receipt, ShieldCheck, ToggleRight, TrendingUp, UserCog, Users, UsersRound, Webhook, type LucideIcon } from "lucide-react";
+import { ArrowLeftRight, BadgeCheck, BadgePercent, BookOpen, Building2, CalendarDays, Coins, FileClock, Gift, GraduationCap, Landmark, LayoutDashboard, ListChecks, Receipt, School, ShieldCheck, ToggleRight, TrendingUp, UserCog, Users, UsersRound, Webhook, type LucideIcon } from "lucide-react";
 import appRoutes from "@/routes/appRoutes";
 import type { AdminRole } from "@/stores/auth.store";
 
@@ -26,6 +26,8 @@ export const navSections: NavSection[] = [
       { label: "BVN review", icon: ShieldCheck, to: appRoutes.BVN_QUEUE, roles: ["compliance"] },
       { label: "Organisers", icon: BadgeCheck, to: appRoutes.SELLERS, roles: ["compliance", "support", "finance"] },
       { label: "Groups", icon: UsersRound, to: appRoutes.GROUPS, roles: ["compliance", "support", "finance"] },
+      { label: "Students", icon: GraduationCap, to: appRoutes.STUDENTS, roles: ["compliance", "support"] },
+      { label: "Schools", icon: School, to: appRoutes.SCHOOLS, roles: ["compliance", "support"] },
       { label: "Events", icon: CalendarDays, to: appRoutes.EVENTS, roles: ["support", "finance", "compliance"] },
       { label: "Missed collections", icon: Building2, to: appRoutes.COLLECTIONS, roles: ["finance", "support"] },
       { label: "Webhooks", icon: Webhook, to: appRoutes.WEBHOOKS },

@@ -52,7 +52,7 @@ const columns: ColumnDef<GroupRow, unknown>[] = [
   { id: "created", header: "Started", cell: ({ row }) => <span className="whitespace-nowrap">{date(row.original.createdAt)}</span> },
 ];
 
-/** Groups collecting dues on Tela: what each holds for its members, and who runs it. */
+/** Groups collecting dues on Tasa: what each holds for its members, and who runs it. */
 export default function GroupsPage() {
   const table = useTableState<Filters>({ defaultFilters: { suspended: "" }, pageSize: PAGE_SIZE });
   const { search, page, pageSize, suspended } = table.queryParams;
@@ -64,7 +64,10 @@ export default function GroupsPage() {
 
   return (
     <>
-      <PageHeader title="Groups" subtitle="Associations and clubs collecting dues. Tela holds the money until executives withdraw it to the group's own account." />
+      <PageHeader
+        title="Groups"
+        subtitle="Associations and clubs collecting dues. Tasa holds the money until executives withdraw it to the group's own account."
+      />
       {query.isError ? (
         <LoadFailed error={query.error} onRetry={() => query.refetch()} />
       ) : (

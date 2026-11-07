@@ -94,7 +94,7 @@ export default function PnlPage() {
                   { key: "commission", label: "VTpass commission", hint: "Its discount on what we sell", amount: data.revenue.commission.total, kind: "in" },
                   { key: "fees", label: "SaySwitch fees", hint: "Funding, payouts, VTpass top-ups", amount: data.costs.fundingFees.total, kind: "out" },
                   { key: "promotions", label: "Promotions", hint: "Discounts at checkout", amount: data.costs.promotions.total, kind: "out" },
-                  { key: "giveaways", label: "Giveaways", hint: "Tela giveaways and gifts used", amount: data.costs.giveaways.total, kind: "out" },
+                  { key: "giveaways", label: "Giveaways", hint: "Tasa giveaways and gifts used", amount: data.costs.giveaways.total, kind: "out" },
                   { key: "points", label: "Points converted", hint: "Turned into wallet cash", amount: data.costs.points.total, kind: "out" },
                   { key: "net", label: data.net >= 0 ? "Profit" : "Loss", amount: data.net, kind: "total" },
                 ]}
@@ -141,7 +141,7 @@ export default function PnlPage() {
             </div>
 
             <div className="space-y-6">
-              <Panel title={`SaySwitch fees Tela absorbs · ${naira(data.costs.fundingFees.total)}`}>
+              <Panel title={`SaySwitch fees Tasa absorbs · ${naira(data.costs.fundingFees.total)}`}>
                 <Breakdown
                   tone="cost"
                   empty="No provider fees in this period."

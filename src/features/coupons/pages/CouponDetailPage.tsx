@@ -48,7 +48,7 @@ function CouponView({ coupon: c }: { coupon: AdminCouponDetail }) {
   const canAct = useCan("finance", "support");
   const action = useCouponAction();
   const { ask } = useAskAction();
-  const isTela = c.fundedBy === "tela";
+  const isTasa = c.fundedBy === "tasa";
   const live = c.status === "active" || c.status === "paused";
   // Closing with claims keeps it active for the claimants and just stops new claims (remaining → 0).
   // A gift someone has started spending can't be closed at all.
@@ -69,15 +69,15 @@ function CouponView({ coupon: c }: { coupon: AdminCouponDetail }) {
             <p>Closing can't be undone.</p>
             <ul className="list-disc space-y-1 pl-5">
               <li>No one new can claim it.</li>
-              {isTela ? (
-                <li>Tela stops being exposed to unclaimed places: up to {naira(c.amount * c.remaining)} that will never be spent.</li>
+              {isTasa ? (
+                <li>Tasa stops being exposed to unclaimed places: up to {naira(c.amount * c.remaining)} that will never be spent.</li>
               ) : (
                 <li>The owner's unclaimed money, {naira(c.amount * c.remaining)}, goes back to their wallet now.</li>
               )}
               <li>
                 People who already claimed keep their balance and can spend it until {dateTime(c.expiresAt)}
                 {c.redeemed > 0 ? ", so it stays listed as active until then" : ""}.
-                {!isTela && " Whatever they don't spend goes back to the owner after expiry."}
+                {!isTasa && " Whatever they don't spend goes back to the owner after expiry."}
               </li>
             </ul>
           </div>
@@ -111,15 +111,15 @@ function CouponView({ coupon: c }: { coupon: AdminCouponDetail }) {
 
   return (
     <>
-      <PageHeader title={c.title} subtitle={`${isTela ? "Tela" : "User"} ${c.kind} · code ${c.code}`} actions={actions} />
+      <PageHeader title={c.title} subtitle={`${isTasa ? "Tasa" : "User"} ${c.kind} · code ${c.code}`} actions={actions} />
 
       <div className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Metric label="Claimed" value={`${count(c.redeemed)} / ${count(c.quantity)}`} hint={`${count(c.remaining)} claims left`} />
           <Metric label="Spent on bills" value={naira(c.stats.used)} hint={`${count(c.stats.uses)} bills`} />
-          {isTela ? (
+          {isTasa ? (
             <>
-              <Metric label="Cost to Tela" value={naira(c.stats.cost)} hint={`Ceiling ${naira(c.stats.maxExposure)} (${naira(c.amount)} × ${count(c.quantity)})`} />
+              <Metric label="Cost to Tasa" value={naira(c.stats.cost)} hint={`Ceiling ${naira(c.stats.maxExposure)} (${naira(c.amount)} × ${count(c.quantity)})`} />
               <Metric label="Exposure left" value={naira(c.stats.exposureLeft)} hint="What it could still cost if every claim is spent" tone={c.stats.exposureLeft ? "default" : "good"} />
             </>
           ) : (
@@ -138,8 +138,8 @@ function CouponView({ coupon: c }: { coupon: AdminCouponDetail }) {
               ...(c.closed ? [{ label: "Closed to new claims", value: c.closedAt ? dateTime(c.closedAt) : "Yes" }] : []),
               { label: "Code", value: <span className="font-mono normal-case">{c.code}</span> },
               { label: "Kind", value: titleCase(c.kind) },
-              { label: "Paid by", value: isTela ? "Tela" : "User" },
-              ...(isTela ? [{ label: "Created by", value: c.createdByName ?? "—" }] : []),
+              { label: "Paid by", value: isTasa ? "Tasa" : "User" },
+              ...(isTasa ? [{ label: "Created by", value: c.createdByName ?? "—" }] : []),
               { label: "Per person", value: naira(c.amount) },
               { label: "Works on", value: c.services === "all" ? "Every bill" : c.services.map(serviceLabel).join(", ") },
               { label: "Starts", value: dateTime(c.startsAt) },
@@ -168,7 +168,7 @@ function CouponView({ coupon: c }: { coupon: AdminCouponDetail }) {
                       { label: "Sent to", value: <span className="normal-case">{c.recipient.label}</span> },
                       { label: "Name", value: c.recipient.name ?? "—" },
                       {
-                        label: "Tela account",
+                        label: "Tasa account",
                         value: c.recipient.user ? (
                           <Link to={toPath(appRoutes.USER, { id: c.recipient.user })} className="text-primary normal-case hover:underline">
                             {c.recipient.userName ?? "View user"}

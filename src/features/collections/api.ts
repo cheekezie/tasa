@@ -8,7 +8,7 @@ export type CollectResult =
   | { status: "already_credited"; transaction: Transaction }
   /** SaySwitch doesn't report this reference as a successful payment (yet). */
   | { status: "not_paid" }
-  /** Paid, but into no permanent account Tela knows. `customerCode` is SaySwitch's, when it named one. */
+  /** Paid, but into no permanent account Tasa knows. `customerCode` is SaySwitch's, when it named one. */
   | { status: "unmatched"; customerCode?: string };
 
 /**

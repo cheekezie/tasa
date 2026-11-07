@@ -105,7 +105,7 @@ export default function SellersPage() {
         subtitle={
           isQueue
             ? `Oldest first, so whoever has waited longest is at the top.${query.data ? ` ${count(query.data.total)} waiting.` : ""}`
-            : "People selling tickets on Tela. Organisers send a selfie and an ID before they can create events."
+            : "People selling tickets on Tasa. Organisers send a selfie and an ID before they can create events."
         }
       />
       {query.isError ? (

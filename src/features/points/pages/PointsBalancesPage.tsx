@@ -31,7 +31,7 @@ const columns: ColumnDef<PointsBalanceRow, unknown>[] = [
     header: "User",
     cell: ({ row }) => (
       <Link to={toPath(appRoutes.USER, { id: row.original.userId })} className="block min-w-40">
-        <span className="block font-medium text-primary hover:underline">{row.original.name ?? "Tela user"}</span>
+        <span className="block font-medium text-primary hover:underline">{row.original.name ?? "Tasa user"}</span>
         {row.original.username && <span className="block text-xs text-grey-400">@{row.original.username}</span>}
       </Link>
     ),

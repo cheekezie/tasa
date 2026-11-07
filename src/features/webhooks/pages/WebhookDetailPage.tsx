@@ -41,7 +41,7 @@ export default function WebhookDetailPage() {
       description: (
         <div className="space-y-2">
           <p>
-            The stored body is processed again, as if it had just arrived. It's safe to repeat: Tela asks{" "}
+            The stored body is processed again, as if it had just arrived. It's safe to repeat: Tasa asks{" "}
             {event ? PROVIDER_LABELS[event.provider] : "the provider"} for the real status before any money moves, and nothing can be credited or
             refunded twice.
           </p>
@@ -141,7 +141,7 @@ export default function WebhookDetailPage() {
 
           <Panel title="Raw body">
             <p className="mb-3 text-xs text-grey-400">
-              Exactly as {PROVIDER_LABELS[event.provider]} sent it. It can hold customer details: don't paste it outside Tela's tools.
+              Exactly as {PROVIDER_LABELS[event.provider]} sent it. It can hold customer details: don't paste it outside Tasa's tools.
             </p>
             <pre className="max-h-[480px] overflow-auto rounded-lg bg-grey-25 p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap break-all text-grey-700">
               {body}

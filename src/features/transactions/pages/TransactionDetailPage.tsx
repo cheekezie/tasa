@@ -167,7 +167,7 @@ function Body({ tx }: { tx: TransactionDetail }) {
               pd.reference && { label: "Provider reference", value: raw(pd.reference, true) },
               pd.code && { label: "Response code", value: raw(pd.code, true) },
               pd.message && { label: "Message", value: raw(pd.message) },
-              pd.cost !== undefined && pd.cost !== null && { label: "Cost to Tela", value: naira(pd.cost) },
+              pd.cost !== undefined && pd.cost !== null && { label: "Cost to Tasa", value: naira(pd.cost) },
               pd.sentAt && { label: "Sent", value: dateTime(pd.sentAt) },
               pd.lastCheckedAt && { label: "Last checked", value: dateTime(pd.lastCheckedAt) },
             ])}
@@ -293,7 +293,7 @@ function LedgerLines({ lines }: { lines: LedgerLine[] }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-grey-400">Signed: what Tela holds is +, what Tela owes (like a user's wallet) is −.</p>
+      <p className="text-xs text-grey-400">Signed: what Tasa holds is +, what Tasa owes (like a user's wallet) is −.</p>
       {[...postings.entries()].map(([posting, group]) => {
         const net = group.reduce((s, l) => s + l.amount, 0);
         return (

@@ -25,7 +25,7 @@ const GROUPS: { key: keyof LedgerSummary; label: string; meaning: string }[] = [
 export default function LedgerPage() {
   return (
     <>
-      <PageHeader title="Ledger" subtitle="Tela's books, checked against VTpass. Profit and loss lives in the P&L report." />
+      <PageHeader title="Ledger" subtitle="Tasa's books, checked against VTpass. Profit and loss lives in the P&L report." />
       <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
         <div className="min-w-0 space-y-6">
           <VtpassCheck />
@@ -117,7 +117,7 @@ function Summary() {
       {query.isPending && <Skeleton className="h-80 rounded-lg" />}
       {data && (
         <div className="space-y-3">
-          <p className="text-xs text-grey-400">Raw ledger signs: what Tela holds is +, what Tela owes or has earned is −.</p>
+          <p className="text-xs text-grey-400">Raw ledger signs: what Tasa holds is +, what Tasa owes or has earned is −.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

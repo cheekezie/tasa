@@ -6,7 +6,7 @@ export type Overview = {
   from: string;
   to: string;
   users: { total: number; new: number };
-  /** What Tela owes users right now: every wallet balance. */
+  /** What Tasa owes users right now: every wallet balance. */
   walletLiability: number;
   funding: { count: number; amount: number };
   bills: { count: number; amount: number; failed: number; successRate: number | null };
@@ -37,7 +37,7 @@ export type Income = {
   period: IncomePeriod;
   from: string;
   to: string;
-  /** Everything Tela earned, and the part from bills (our charges plus VTpass commission). */
+  /** Everything Tasa earned, and the part from bills (our charges plus VTpass commission). */
   income: number;
   billIncome: number;
   previous: { income: number; billIncome: number } | null;

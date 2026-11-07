@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCan } from "@/stores";
 import { useAskAction } from "@/shared/hooks/useAskAction";
 
-/** Every charge Tela adds to a transaction, grouped by what it's charged on. */
+/** Every charge Tasa adds to a transaction, grouped by what it's charged on. */
 export default function ChargesPage() {
   const canEdit = useCan("finance");
   const query = useChargeRules();
@@ -68,7 +68,7 @@ export default function ChargesPage() {
     <>
       <PageHeader
         title="Charges"
-        subtitle="What Tela charges on each kind of transaction. Changes reach new quotes within 30 seconds."
+        subtitle="What Tasa charges on each kind of transaction. Changes reach new quotes within 30 seconds."
         actions={
           canEdit
             ? [

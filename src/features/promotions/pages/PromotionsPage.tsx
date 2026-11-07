@@ -20,7 +20,7 @@ const FILTERS: FilterConfig[] = [
   { type: "select", key: "status", label: "Status", options: ["active", "paused", "expired", "cancelled"].map((s) => ({ label: titleCase(s), value: s })) },
 ];
 
-/** Tela-paid promo codes: what each gives, who can use it, and how much of its budget is gone. */
+/** Tasa-paid promo codes: what each gives, who can use it, and how much of its budget is gone. */
 export default function PromotionsPage() {
   const canEdit = useCan("finance");
   const table = useTableState<{ status: string }>({ defaultFilters: { status: "" } });
@@ -156,7 +156,7 @@ export default function PromotionsPage() {
     <>
       <PageHeader
         title="Promotions"
-        subtitle="Discount codes paid for by Tela. Each discount is booked as a cost when it's used."
+        subtitle="Discount codes paid for by Tasa. Each discount is booked as a cost when it's used."
         actions={
           canEdit
             ? [

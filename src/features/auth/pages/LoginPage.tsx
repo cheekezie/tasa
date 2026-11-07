@@ -31,7 +31,7 @@ export default function LoginPage() {
     <form onSubmit={submit} className="w-full max-w-sm space-y-5">
       <div>
         <h1 className="font-heading text-2xl font-semibold text-grey-800">Sign in</h1>
-        <p className="mt-1 text-sm text-grey-400">The {BRAND.product} back office, for Tela staff only.</p>
+        <p className="mt-1 text-sm text-grey-400">The {BRAND.product} back office, for Tasa staff only.</p>
       </div>
       <FormInput
         name="email"
@@ -74,10 +74,10 @@ export default function LoginPage() {
 const DEV_PASSWORD = import.meta.env.DEV ? "tela-dev-admin" : "";
 const DEV_ACCOUNTS = import.meta.env.DEV
   ? [
-      { email: "super@tela.dev", role: "Super admin" },
-      { email: "finance@tela.dev", role: "Finance" },
-      { email: "support@tela.dev", role: "Support" },
-      { email: "compliance@tela.dev", role: "Compliance" },
+      { email: "super@tasa.dev", role: "Super admin" },
+      { email: "finance@tasa.dev", role: "Finance" },
+      { email: "support@tasa.dev", role: "Support" },
+      { email: "compliance@tasa.dev", role: "Compliance" },
     ]
   : [];
 

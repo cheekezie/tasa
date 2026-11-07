@@ -18,7 +18,7 @@ export type WebhookEvent = {
   signature: "valid" | "invalid" | "none";
   status: WebhookStatus;
   reference?: string;
-  /** What processing did, e.g. "funding success" or "collection TLV… (credited)". */
+  /** What processing did, e.g. "funding success" or "collection TSV… (credited)". */
   result?: string;
   error?: string;
   processedAt?: string;

@@ -60,7 +60,7 @@ const columns: ColumnDef<UserRow, unknown>[] = [
   { id: "joined", header: "Joined", cell: ({ row }) => date(row.original.createdAt) },
 ];
 
-/** Everyone on Tela, newest first. Find someone by phone, email, username or name. */
+/** Everyone on Tasa, newest first. Find someone by phone, email, username or name. */
 export default function UsersPage() {
   const table = useTableState<{ bvnStatus: BvnStatus | ""; status: UserStatus | "" }>({ defaultFilters: { bvnStatus: "", status: "" }, pageSize: PAGE_SIZE });
   const { search, page, pageSize, bvnStatus, status } = table.queryParams;

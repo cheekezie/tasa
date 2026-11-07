@@ -20,11 +20,11 @@ export type AdminEvent = {
   endsAt: string | null;
   /** 0 = no refunds. */
   refundDays: number;
-  /** `paused` if either the organiser or Tela paused; `ended` once the event is over. */
+  /** `paused` if either the organiser or Tasa paused; `ended` once the event is over. */
   sales: "on_sale" | "paused" | "ended";
   /** The organiser's own pause; they can lift it. */
   salesPaused: boolean;
-  /** Tela's pause; only staff can lift it. */
+  /** Tasa's pause; only staff can lift it. */
   adminPaused: boolean;
   tiers: { id: string; name: string; covers: number | null; price: number; limit: number | null; sold: number; remaining: number | null }[];
   sold: number;
@@ -33,7 +33,7 @@ export type AdminEvent = {
   staff: { id: string; name: string; username: string | null }[];
 };
 
-export type EventSales = "on_sale" | "paused" | "ended" | "tela_paused";
+export type EventSales = "on_sale" | "paused" | "ended" | "tasa_paused";
 
 /** `search` matches the title, or the exact event code. `owner` = one organiser's events. */
 export type AdminEventsParams = { page: number; limit: number; search?: string; sales?: EventSales | ""; owner?: string };

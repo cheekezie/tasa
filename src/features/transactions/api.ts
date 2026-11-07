@@ -113,7 +113,7 @@ export type ProviderData = {
 
 export type TransactionEvent = { type: string; at: string; note?: string };
 
-/** One ledger line. Signed kobo: assets +, what Tela owes −. */
+/** One ledger line. Signed kobo: assets +, what Tasa owes −. */
 export type LedgerLine = { posting: string; account: string; amount: number; memo: string; at: string };
 
 /** GET /admin/transactions/:id. */

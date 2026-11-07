@@ -38,7 +38,7 @@ const OUTCOMES: Record<CollectResult["status"], { label: string; variant: Status
     variant: "error",
     tone: "border-destructive/20 bg-destructive/5",
     explain:
-      "SaySwitch says it was paid, but not into any Tela permanent account. Nothing was credited. Escalate to finance with the reference and customer code.",
+      "SaySwitch says it was paid, but not into any Tasa permanent account. Nothing was credited. Escalate to finance with the reference and customer code.",
   },
 };
 

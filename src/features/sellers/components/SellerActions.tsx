@@ -86,7 +86,7 @@ export function SuspensionAction({ seller, name, onStale }: Props) {
       description: (
         <div className="space-y-2 text-left">
           <ul className="list-disc space-y-1 pl-5">
-            <li>Every event of theirs still selling is paused as Tela. They can't undo that pause.</li>
+            <li>Every event of theirs still selling is paused as Tasa. They can't undo that pause.</li>
             <li>They can't create new events.</li>
             <li>Withdrawals from their ticket balance are held.</li>
           </ul>

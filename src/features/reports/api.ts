@@ -16,7 +16,7 @@ export type Pnl = {
     total: number;
   };
   costs: {
-    /** SaySwitch fees Tela absorbs, by source: funding, collection, payout, topup. */
+    /** SaySwitch fees Tasa absorbs, by source: funding, collection, payout, topup. */
     fundingFees: { total: number; bySource: Record<string, number>; unreportedCount: number };
     promotions: { total: number; byCampaign: CampaignCost[] };
     giveaways: { total: number; byCampaign: CampaignCost[] };
@@ -38,7 +38,7 @@ export type Pnl = {
   series: { day: string; revenue: number; costs: number; net: number }[];
 };
 
-/** GET /admin/reports/giveaways: a plain array of every Tela coupon, gift and promo. */
+/** GET /admin/reports/giveaways: a plain array of every Tasa coupon, gift and promo. */
 export type GiveawayRow = {
   id: string;
   code: string;
