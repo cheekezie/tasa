@@ -45,13 +45,13 @@ export function guestOrderEmail(order: IGuestOrder, bill: ITransaction | null, i
     : `<p style="font-size:16px;color:#1A1A18">${escape(order.failureReason ?? 'The provider didn’t complete the payment.')}</p>
        <p style="font-size:14px;line-height:1.6;color:#6B6860">${
          inWallet > 0
-           ? `Your ${escape(formatNaira(inWallet))} is safe in a Tela wallet for ${escape(localPhone(order.phone))}. Get the Tela app and sign up with that number to use it, or to try again.`
+           ? `Your ${escape(formatNaira(inWallet))} is safe in a Tasa wallet for ${escape(localPhone(order.phone))}. Get the Tasa app and sign up with that number to use it, or to try again.`
            : 'No money was taken.'
        }</p>`;
 
   const html = `<!doctype html><html><body style="margin:0;background:#FAF8F4;font-family:-apple-system,Helvetica,Arial,sans-serif">
   <div style="max-width:520px;margin:0 auto;padding:32px 20px">
-    <div style="font-size:20px;font-weight:700;color:${BRAND}">Tela</div>
+    <div style="font-size:20px;font-weight:700;color:${BRAND}">Tasa</div>
     <div style="margin-top:20px;padding:28px;border-radius:20px;background:#FFFFFF;border:1px solid #E8E4DC">
       <h1 style="margin:0;font-size:20px;color:#063328">${escape(delivered ? 'Here it is' : 'This didn’t go through')}</h1>
       <p style="margin:6px 0 0;font-size:14px;color:#6B6860">${escape([what, order.bill.account, order.bill.customerName].filter(Boolean).join(' · '))}</p>
@@ -64,8 +64,8 @@ export function guestOrderEmail(order: IGuestOrder, bill: ITransaction | null, i
       <a href="${escape(links.order)}" style="display:block;margin-top:20px;padding:14px;border-radius:14px;background:${BRAND};color:#FFFFFF;text-align:center;font-weight:600;text-decoration:none">View your order</a>
     </div>
     <p style="margin:20px 4px 0;font-size:13px;line-height:1.6;color:#6B6860">
-      Next time, pay in seconds from your Tela wallet: no transfer to wait for, and your PINs and tokens are always in the app.
-      <a href="${escape(links.site)}" style="color:${BRAND}">Get Tela</a>.
+      Next time, pay in seconds from your Tasa wallet: no transfer to wait for, and your PINs and tokens are always in the app.
+      <a href="${escape(links.site)}" style="color:${BRAND}">Get Tasa</a>.
     </p>
   </div></body></html>`;
 

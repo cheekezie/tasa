@@ -16,18 +16,25 @@ const balanceOf = async (id: Types.ObjectId | string) => {
 
 const ownerOf = (g: Pick<IGroup, 'executives'>) => g.executives.find((e) => e.role === 'owner')!.user;
 
-/** Groups for the back office: who runs them, what they hold, and Tela's power to stop them. */
+/** Groups for the back office: who runs them, what they hold, and Tasa's power to stop them. */
 export const GroupsAdminService = {
   async list(q: { suspended?: boolean | undefined; search?: string | undefined; page: number; limit: number }) {
     const filter: FilterQuery<IGroup> = {};
     if (q.suspended !== undefined) filter['suspended.at'] = q.suspended ? { $exists: true } : { $exists: false };
     if (q.search) {
       const pattern = new RegExp(q.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }, { phone: pattern }] }).select('_id').limit(200).lean();
+      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }, { phone: pattern }] })
+        .select('_id')
+        .limit(200)
+        .lean();
       filter.$or = [{ name: pattern }, { inviteCode: q.search.toUpperCase() }, { 'executives.user': { $in: users.map((u) => u._id) } }];
     }
     const [items, total] = await Promise.all([
-      GroupModel.find(filter).sort({ createdAt: -1 }).skip((q.page - 1) * q.limit).limit(q.limit).lean(),
+      GroupModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((q.page - 1) * q.limit)
+        .limit(q.limit)
+        .lean(),
       GroupModel.countDocuments(filter),
     ]);
     const [owners, counts, balances] = await Promise.all([

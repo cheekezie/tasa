@@ -174,9 +174,9 @@ export async function adminsRoutes(app: FastifyInstance) {
     if (q.user) filter.user = q.user;
     if (q.channel) filter.channel = q.channel === 'web' ? 'web' : { $exists: false };
     if (q.reference) {
-      // A website order's reference (TLY…) finds its transfer and its bill.
+      // A website order's reference (TSY…, or TLY… from before the rename) finds its transfer and its bill.
       const ref = q.reference.toUpperCase();
-      const order = ref.startsWith('TLY') ? await GuestOrderModel.findOne({ reference: ref }).select('_id') : null;
+      const order = /^T[SL]Y/.test(ref) ? await GuestOrderModel.findOne({ reference: ref }).select('_id') : null;
       if (order) filter.guestOrder = order._id;
       else filter.reference = ref;
     }

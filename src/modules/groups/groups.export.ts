@@ -42,16 +42,22 @@ export async function dueReportWorkbook(groupId: string, userId: string, dueId: 
   const names = report.columns.map((c) => columnName(due.kind, due.period, c.start));
 
   const book = new ExcelJS.Workbook();
-  book.creator = 'Tela';
+  book.creator = 'Tasa';
   book.created = new Date();
   const sheet = book.addWorksheet(due.name.slice(0, 31), { views: [{ state: 'frozen', xSplit: 2, ySplit: 6 }] });
   const naira = '"₦"#,##0.00';
 
   const price = due.kind === 'recurring' ? `${due.period}` : 'once';
   sheet.addRow([group.name]).font = { bold: true, size: 14 };
-  sheet.addRow([`${due.name} · ₦${koboToNaira(due.amount).toLocaleString('en-NG')} ${price} · ${due.compulsory ? 'compulsory' : 'optional'}${report.year ? ` · ${report.year}` : ''}`]);
-  sheet.addRow([`Collected ₦${koboToNaira(report.totals.collected).toLocaleString('en-NG')} · Outstanding ₦${koboToNaira(report.totals.outstanding).toLocaleString('en-NG')} · ${report.totals.owing} of ${report.totals.members} owing`]);
-  sheet.addRow([`Exported ${new Intl.DateTimeFormat('en-NG', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Africa/Lagos' }).format(new Date())}`]).font = { color: { argb: 'FF888888' } };
+  sheet.addRow([
+    `${due.name} · ₦${koboToNaira(due.amount).toLocaleString('en-NG')} ${price} · ${due.compulsory ? 'compulsory' : 'optional'}${report.year ? ` · ${report.year}` : ''}`,
+  ]);
+  sheet.addRow([
+    `Collected ₦${koboToNaira(report.totals.collected).toLocaleString('en-NG')} · Outstanding ₦${koboToNaira(report.totals.outstanding).toLocaleString('en-NG')} · ${report.totals.owing} of ${report.totals.members} owing`,
+  ]);
+  sheet.addRow([`Exported ${new Intl.DateTimeFormat('en-NG', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Africa/Lagos' }).format(new Date())}`]).font = {
+    color: { argb: 'FF888888' },
+  };
   sheet.addRow([]);
 
   const header = sheet.addRow(['Member', 'Username', ...names, 'Periods paid', 'Owes']);
@@ -94,6 +100,9 @@ export async function dueReportWorkbook(groupId: string, userId: string, dueId: 
   sheet.getColumn(4 + names.length).width = 14;
 
   const buffer = Buffer.from(await book.xlsx.writeBuffer());
-  const slug = `${group.name}-${due.name}${report.year ? `-${report.year}` : ''}`.replace(/[^\w-]+/g, '-').replace(/-+/g, '-').slice(0, 80);
+  const slug = `${group.name}-${due.name}${report.year ? `-${report.year}` : ''}`
+    .replace(/[^\w-]+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 80);
   return { buffer, filename: `${slug}.xlsx` };
 }

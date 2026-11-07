@@ -8,7 +8,7 @@ import {
   ConfirmQuoteSchema,
   CouponCodeSchema,
   CreatePromoSchema,
-  TelaCouponSchema,
+  TasaCouponSchema,
   UpdatePromoSchema,
 } from './coupons.schema';
 import { auditAdminAction, requireActiveAdmin } from '../admins/admins.guard';
@@ -19,7 +19,7 @@ import { requireFeature } from '../config/config.routes';
 /**
  * `/api/coupons`, `/api/gifts`, `/api/promotions`. Create a coupon or gift by quoting with
  * POST /api/quotes { kind: 'coupon' | 'gift' }, then confirming here with the quote and PIN.
- * Any code — coupon, gift or Tela promo — is used by passing `couponCode` on a bill quote;
+ * Any code — coupon, gift or Tasa promo — is used by passing `couponCode` on a bill quote;
  * the API decides what it's worth.
  */
 export async function couponsRoutes(app: FastifyInstance) {
@@ -83,7 +83,7 @@ export async function giftsRoutes(app: FastifyInstance) {
   });
 }
 
-/** Tela promos the app can show as banners: active, listed, budget left, and not used up by this user. */
+/** Tasa promos the app can show as banners: active, listed, budget left, and not used up by this user. */
 export async function promotionsRoutes(app: FastifyInstance) {
   app.addHook('preHandler', app.authenticate);
   app.addHook('preHandler', requireActor('user'));
@@ -91,7 +91,7 @@ export async function promotionsRoutes(app: FastifyInstance) {
   app.get('/', async (req, reply) => send(reply, await CouponsService.listedPromos(req.user.sub)));
 }
 
-/** `/api/admin/promotions` — Tela-funded promo codes. Finance creates and edits; anyone in the back office can read. */
+/** `/api/admin/promotions` — Tasa-funded promo codes. Finance creates and edits; anyone in the back office can read. */
 export async function adminPromotionsRoutes(app: FastifyInstance) {
   app.addHook('preHandler', app.authenticate);
   app.addHook('preHandler', requireActor('admin'));
@@ -125,8 +125,8 @@ export async function adminPromotionsRoutes(app: FastifyInstance) {
 }
 
 /**
- * `/api/admin/coupons` — every coupon and gift. Finance creates Tela-funded giveaways
- * (`fundedBy: 'tela'`); support and finance can pause or close any coupon (a user's
+ * `/api/admin/coupons` — every coupon and gift. Finance creates Tasa-funded giveaways
+ * (`fundedBy: 'tasa'`); support and finance can pause or close any coupon (a user's
  * unclaimed money goes back to them).
  */
 export async function adminCouponsRoutes(app: FastifyInstance) {
@@ -142,9 +142,9 @@ export async function adminCouponsRoutes(app: FastifyInstance) {
     return send(reply, await CouponsService.adminGet(id));
   });
 
-  /** A giveaway coupon (many people) or a gift to one phone number, paid for by Tela. */
+  /** A giveaway coupon (many people) or a gift to one phone number, paid for by Tasa. */
   app.post('/', { preHandler: requireRole('finance') }, async (req, reply) =>
-    send(reply, await CouponsService.createTelaCoupon(parse(TelaCouponSchema, req.body), req.user.sub), 201),
+    send(reply, await CouponsService.createTasaCoupon(parse(TasaCouponSchema, req.body), req.user.sub), 201),
   );
 
   app.post('/:id/pause', { preHandler: requireRole('finance', 'support') }, async (req, reply) => {

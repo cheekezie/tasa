@@ -76,7 +76,7 @@ const say = {
 };
 const sayRoutes: Record<string, Handler> = {
   'POST /api/s2s/banktransfer/initialize': () => ({
-    json: { status: true, data: { account_name: 'SAYSWITCH/TELA', account_number: '8787652431', bank_name: 'Wema Bank' } },
+    json: { status: true, data: { account_name: 'SAYSWITCH/TASA', account_number: '8787652431', bank_name: 'Wema Bank' } },
   }),
   'GET /api/v1/bank_list': () => ({ json: { success: true, data: [{ bankName: 'Wema Test Bank ', bankCode: '035', logo: '' }] } }),
   'POST /api/v1/account_name_verify': (b) => {
@@ -88,7 +88,7 @@ const sayRoutes: Record<string, Handler> = {
   'POST /api/v1/dedicated_virtual_account': (b) => ({
     json: {
       success: true,
-      data: { account_number: `99${String(b.customer).replace(/\D/g, '').padStart(8, '0')}`, account_name: 'TELA/CUSTOMER', bank_name: 'Providus Bank' },
+      data: { account_number: `99${String(b.customer).replace(/\D/g, '').padStart(8, '0')}`, account_name: 'TASA/CUSTOMER', bank_name: 'Providus Bank' },
     },
   }),
 };
@@ -144,7 +144,7 @@ const r2Deleted: string[] = [];
 vi.stubGlobal('fetch', async (input: string | URL | Request, init?: RequestInit) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
   if (url.hostname.endsWith('r2.cloudflarestorage.com')) {
-    const key = decodeURIComponent(url.pathname.replace(/^\/(tela-test\/)?/, ''));
+    const key = decodeURIComponent(url.pathname.replace(/^\/(tasa-test\/)?/, ''));
     const method = input instanceof Request ? input.method : init?.method;
     if (method === 'DELETE') {
       r2Deleted.push(key);
@@ -208,7 +208,7 @@ let phoneSeq = 0;
 
 beforeAll(async () => {
   mongo = await MongoMemoryReplSet.create({ replSet: { count: 1, storageEngine: 'wiredTiger' } });
-  await connectDB(mongo.getUri('tela-test'));
+  await connectDB(mongo.getUri('tasa-test'));
   await Promise.all(Object.values(mongoose.models).map((m) => m.init()));
   if (!env.REDIS_URL.endsWith('/15')) throw new Error('Refusing to flush a Redis db that is not the test db');
   await redis.flushdb();
@@ -273,8 +273,8 @@ const balance = async (token: string) => (await call('GET', '/api/wallet', token
 let adminToken: string | undefined;
 async function asAdmin() {
   if (adminToken) return adminToken;
-  await AdminModel.create({ name: 'Finance', email: 'fin@tela.test', role: 'finance', passwordHash: await bcrypt.hash('correct-horse', 4) });
-  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'fin@tela.test', password: 'correct-horse' });
+  await AdminModel.create({ name: 'Finance', email: 'fin@tasa.test', role: 'finance', passwordHash: await bcrypt.hash('correct-horse', 4) });
+  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'fin@tasa.test', password: 'correct-horse' });
   adminToken = res.body.data.accessToken as string;
   return adminToken;
 }
@@ -282,8 +282,8 @@ async function asAdmin() {
 let supportToken: string | undefined;
 async function asSupport() {
   if (supportToken) return supportToken;
-  await AdminModel.create({ name: 'Support', email: 'help@tela.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
-  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'help@tela.test', password: 'correct-horse' });
+  await AdminModel.create({ name: 'Support', email: 'help@tasa.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
+  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'help@tasa.test', password: 'correct-horse' });
   supportToken = res.body.data.accessToken as string;
   return supportToken;
 }
@@ -291,8 +291,8 @@ async function asSupport() {
 let complianceToken: string | undefined;
 async function asCompliance() {
   if (complianceToken) return complianceToken;
-  await AdminModel.create({ name: 'Compliance', email: 'kyc@tela.test', role: 'compliance', passwordHash: await bcrypt.hash('correct-horse', 4) });
-  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'kyc@tela.test', password: 'correct-horse' });
+  await AdminModel.create({ name: 'Compliance', email: 'kyc@tasa.test', role: 'compliance', passwordHash: await bcrypt.hash('correct-horse', 4) });
+  const res = await call('POST', '/api/auth/admin/login', undefined, { email: 'kyc@tasa.test', password: 'correct-horse' });
   complianceToken = res.body.data.accessToken as string;
   return complianceToken;
 }
@@ -351,7 +351,7 @@ describe('funding', () => {
   it('quotes the charge, issues an account, and credits only after SaySwitch confirms', async () => {
     const { token } = await signUp();
     const quote = await call('POST', '/api/quotes', token, { kind: 'funding', amount: 1_000_000 });
-    // Funding looks free: Tela absorbs SaySwitch's fee.
+    // Funding looks free: Tasa absorbs SaySwitch's fee.
     expect(quote.body.data).toMatchObject({ amount: 1_000_000, fee: 0, total: 1_000_000, charges: [] });
 
     const started = await call('POST', '/api/wallet/fundings', token, { quoteId: quote.body.data.id });
@@ -995,7 +995,7 @@ describe('coupon balances', () => {
   });
 });
 
-describe('Tela promotions', () => {
+describe('Tasa promotions', () => {
   it('rejects an uncapped percentage and warns on a fixed promo with no minimum spend', async () => {
     const bad = await call('POST', '/api/admin/promotions', await asAdmin(), {
       code: 'NOCAP', title: 'No cap', valueType: 'percent', value: 50, budget: 100_000, expiresAt: inAMonth(),
@@ -1104,20 +1104,20 @@ describe('Tela promotions', () => {
   });
 });
 
-describe('Tela giveaways', () => {
+describe('Tasa giveaways', () => {
   it('books a giveaway coupon to expense:giveaways as it is used, and tracks what it could still cost', async () => {
     const admin = await asAdmin();
     const created = await call('POST', '/api/admin/coupons', admin, {
-      kind: 'coupon', title: 'Launch giveaway', code: 'TELA-LAUNCH', amount: 100_000, quantity: 2, expiresAt: inAMonth(),
+      kind: 'coupon', title: 'Launch giveaway', code: 'TASA-LAUNCH', amount: 100_000, quantity: 2, expiresAt: inAMonth(),
     });
     expect(created.status).toBe(201);
-    expect(created.body.data).toMatchObject({ fundedBy: 'tela', owner: null, stats: { cost: 0, maxExposure: 200_000, exposureLeft: 200_000 } });
+    expect(created.body.data).toMatchObject({ fundedBy: 'tasa', owner: null, stats: { cost: 0, maxExposure: 200_000, exposureLeft: 200_000 } });
     const id = created.body.data.id as string;
 
     const { token, phone } = await signUp();
     await fund(token, 100_000);
-    const q = await airtimeQuote(token, phone, 100_000, { couponCode: 'TELA-LAUNCH' });
-    expect(q.body.data).toMatchObject({ discount: 100_000, total: 2_000, coupon: { fundedBy: 'tela' } });
+    const q = await airtimeQuote(token, phone, 100_000, { couponCode: 'TASA-LAUNCH' });
+    expect(q.body.data).toMatchObject({ discount: 100_000, total: 2_000, coupon: { fundedBy: 'tasa' } });
     expect((await pay(token, q.body.data.id)).body.data.status).toBe('success');
 
     expect(await LedgerService.balance(`expense:giveaways:${id}`)).toBe(100_000);
@@ -1125,29 +1125,29 @@ describe('Tela giveaways', () => {
     expect(detail.body.data.stats).toMatchObject({ claims: 1, uses: 1, used: 100_000, cost: 100_000, exposureLeft: 100_000 });
 
     const report = await call('GET', '/api/admin/reports/giveaways', admin);
-    const row = report.body.data.items.find((i: { code: string }) => i.code === 'TELA-LAUNCH');
+    const row = report.body.data.items.find((i: { code: string }) => i.code === 'TASA-LAUNCH');
     expect(row).toMatchObject({ kind: 'coupon', uses: 1, people: 1, costToDate: 100_000, maxCost: 200_000, exposureLeft: 100_000 });
 
-    // Closing stops further cost; nobody is "refunded" because Tela never set money aside.
+    // Closing stops further cost; nobody is "refunded" because Tasa never set money aside.
     await call('POST', `/api/admin/coupons/${id}/close`, admin);
     const after = await call('GET', '/api/admin/reports/giveaways', admin);
-    expect(after.body.data.items.find((i: { code: string }) => i.code === 'TELA-LAUNCH').exposureLeft).toBeLessThanOrEqual(100_000);
+    expect(after.body.data.items.find((i: { code: string }) => i.code === 'TASA-LAUNCH').exposureLeft).toBeLessThanOrEqual(100_000);
     const other = await signUp();
-    expect((await airtimeQuote(other.token, other.phone, 100_000, { couponCode: 'TELA-LAUNCH' })).body.code).toBe('COUPON_USED_UP');
+    expect((await airtimeQuote(other.token, other.phone, 100_000, { couponCode: 'TASA-LAUNCH' })).body.code).toBe('COUPON_USED_UP');
     await expectBooksBalanced();
   });
 
-  it('sends a Tela-funded gift to a phone number', async () => {
+  it('sends a Tasa-funded gift to a phone number', async () => {
     const { token, phone } = await signUp();
     const gift = await call('POST', '/api/admin/coupons', await asAdmin(), {
       kind: 'gift', title: 'Sorry about your token', amount: 50_000, recipient: { type: 'phone', value: phone }, expiresAt: inAMonth(),
     });
-    expect(gift.body.data).toMatchObject({ kind: 'gift', fundedBy: 'tela', recipient: { label: phone, user: expect.any(String) } });
-    expect((await call('GET', '/api/gifts/received', token)).body.data[0]).toMatchObject({ code: gift.body.data.code, fundedBy: 'tela' });
+    expect(gift.body.data).toMatchObject({ kind: 'gift', fundedBy: 'tasa', recipient: { label: phone, user: expect.any(String) } });
+    expect((await call('GET', '/api/gifts/received', token)).body.data[0]).toMatchObject({ code: gift.body.data.code, fundedBy: 'tasa' });
   });
 
   it('only lets finance create giveaways', async () => {
-    const support = await AdminModel.create({ name: 'Support', email: 'sup@tela.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
+    const support = await AdminModel.create({ name: 'Support', email: 'sup@tasa.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
     const login = await call('POST', '/api/auth/admin/login', undefined, { email: support.email, password: 'correct-horse' });
     const res = await call('POST', '/api/admin/coupons', login.body.data.accessToken, { kind: 'coupon', title: 'x', amount: 10_000, expiresAt: inAMonth() });
     expect(res.status).toBe(403);
@@ -1178,7 +1178,7 @@ describe('profit and loss', () => {
     await pay(token, (await airtimeQuote(token, phone, 100_000)).body.data.id);
     vt.pay = (b) => delivered(b);
 
-    // A ₦500 Tela giveaway, used in full on a ₦500 airtime (+₦20 charge).
+    // A ₦500 Tasa giveaway, used in full on a ₦500 airtime (+₦20 charge).
     await call('POST', '/api/admin/coupons', await asAdmin(), { kind: 'coupon', title: 'PnL test', code: 'PNL-500', amount: 50_000, quantity: 1, expiresAt: inAMonth() });
     await pay(token, (await airtimeQuote(token, phone, 50_000, { couponCode: 'PNL-500' })).body.data.id);
 
@@ -1210,8 +1210,8 @@ describe('profit and loss', () => {
 
 describe('staff', () => {
   it("tells an admin a mistyped current password apart from a lost session", async () => {
-    await AdminModel.create({ name: 'Pat', email: 'pat@tela.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
-    const pat = (await call('POST', '/api/auth/admin/login', undefined, { email: 'pat@tela.test', password: 'correct-horse' })).body.data;
+    await AdminModel.create({ name: 'Pat', email: 'pat@tasa.test', role: 'support', passwordHash: await bcrypt.hash('correct-horse', 4) });
+    const pat = (await call('POST', '/api/auth/admin/login', undefined, { email: 'pat@tasa.test', password: 'correct-horse' })).body.data;
     const wrong = await call('POST', '/api/admin/me/password', pat.accessToken, { currentPassword: 'not-it', newPassword: 'a-much-longer-pass' });
     expect(wrong).toMatchObject({ status: 422, body: { code: 'PASSWORD_INCORRECT' } });
     expect((await call('POST', '/api/admin/me/password', pat.accessToken, { currentPassword: 'correct-horse', newPassword: 'a-much-longer-pass' })).status).toBe(200);
@@ -1220,12 +1220,12 @@ describe('staff', () => {
   });
 
   it('lets a super admin manage staff, and a deactivation takes effect on the next request', async () => {
-    await AdminModel.create({ name: 'Boss', email: 'boss@tela.test', role: 'super_admin', passwordHash: await bcrypt.hash('correct-horse', 4) });
-    const boss = (await call('POST', '/api/auth/admin/login', undefined, { email: 'boss@tela.test', password: 'correct-horse' })).body.data;
+    await AdminModel.create({ name: 'Boss', email: 'boss@tasa.test', role: 'super_admin', passwordHash: await bcrypt.hash('correct-horse', 4) });
+    const boss = (await call('POST', '/api/auth/admin/login', undefined, { email: 'boss@tasa.test', password: 'correct-horse' })).body.data;
 
-    const created = await call('POST', '/api/admin/staff', boss.accessToken, { name: 'New Finance', email: 'nf@tela.test', role: 'finance', password: 'a-long-password-1' });
+    const created = await call('POST', '/api/admin/staff', boss.accessToken, { name: 'New Finance', email: 'nf@tasa.test', role: 'finance', password: 'a-long-password-1' });
     expect(created.status).toBe(201);
-    const nf = (await call('POST', '/api/auth/admin/login', undefined, { email: 'nf@tela.test', password: 'a-long-password-1' })).body.data;
+    const nf = (await call('POST', '/api/auth/admin/login', undefined, { email: 'nf@tasa.test', password: 'a-long-password-1' })).body.data;
     expect((await call('GET', '/api/admin/charges', nf.accessToken)).status).toBe(200);
     expect((await call('GET', '/api/admin/staff', nf.accessToken)).status).toBe(403);
 
@@ -1349,7 +1349,7 @@ describe('recipient lookup', () => {
     return { token: v.body.data.accessToken as string, id: v.body.data.user.id as string };
   }
 
-  it('finds a Tela user by username, phone or email without revealing their contact details', async () => {
+  it('finds a Tasa user by username, phone or email without revealing their contact details', async () => {
     const ada = await signUp('ada_look');
     await call('POST', '/api/me/contacts/verify', ada.token, {
       type: 'email', value: 'ada.look@example.com',
@@ -1369,7 +1369,7 @@ describe('recipient lookup', () => {
     expect((await call('POST', '/api/users/lookup', ada.token, { type: 'username', value: 'ada_look' })).body.data.isSelf).toBe(true);
   });
 
-  it('says whether someone not on Tela can still be invited', async () => {
+  it('says whether someone not on Tasa can still be invited', async () => {
     const { token } = await signUp();
     expect((await call('POST', '/api/users/lookup', token, { type: 'phone', value: '08055500001' })).body.data).toEqual({ found: false, canInvite: true });
     expect((await call('POST', '/api/users/lookup', token, { type: 'username', value: 'nobody_here' })).body.data).toEqual({ found: false, canInvite: false });
@@ -1382,7 +1382,7 @@ describe('recipient lookup', () => {
     const stranger = await signUp();
     await fund(sender.token, 500_000);
     const gq = await call('POST', '/api/quotes', sender.token, { kind: 'gift', recipient: { type: 'username', value: 'bob_gift' }, amount: 100_000 });
-    expect(gq.body.data.gift).toMatchObject({ recipient: '@bob_gift', onTela: true });
+    expect(gq.body.data.gift).toMatchObject({ recipient: '@bob_gift', onTasa: true });
     const code = (await call('POST', '/api/gifts', sender.token, { quoteId: gq.body.data.id, pin: '2580' })).body.data.coupon.code;
 
     expect((await call('GET', '/api/gifts/received', bob.token)).body.data[0]).toMatchObject({ code });
@@ -1395,11 +1395,11 @@ describe('recipient lookup', () => {
     expect((await call('POST', '/api/quotes', sender.token, { kind: 'gift', recipient: { type: 'username', value: 'ghost_user' }, amount: 100_000 })).status).toBe(404);
   });
 
-  it('sends a gift to an email that is not on Tela yet; it is waiting when they sign up', async () => {
+  it('sends a gift to an email that is not on Tasa yet; it is waiting when they sign up', async () => {
     const sender = await signUp();
     await fund(sender.token, 500_000);
     const gq = await call('POST', '/api/quotes', sender.token, { kind: 'gift', recipient: { type: 'email', value: 'newbie@example.com' }, amount: 100_000 });
-    expect(gq.body.data.gift).toMatchObject({ recipient: 'newbie@example.com', onTela: false });
+    expect(gq.body.data.gift).toMatchObject({ recipient: 'newbie@example.com', onTasa: false });
     const code = (await call('POST', '/api/gifts', sender.token, { quoteId: gq.body.data.id, pin: '2580' })).body.data.coupon.code;
 
     const newbie = await emailUser('newbie@example.com');
@@ -1424,7 +1424,7 @@ describe('recipient lookup', () => {
     const receiver = await emailUser('receiver@example.com');
     await fund(sender.token, 500_000);
     const q = await call('POST', '/api/quotes', sender.token, { kind: 'transfer', recipient: { type: 'email', value: 'receiver@example.com' }, amount: 100_000 });
-    expect(q.body.data.transfer).toEqual({ username: null, name: 'Tela user' });
+    expect(q.body.data.transfer).toEqual({ username: null, name: 'Tasa user' });
     expect((await call('POST', '/api/transfers', sender.token, { quoteId: q.body.data.id, pin: '2580' })).status).toBe(201);
     expect(await balance(receiver.token)).toBe(100_000);
     expect((await call('POST', '/api/quotes', sender.token, { kind: 'transfer', recipient: { type: 'phone', value: '08055500002' }, amount: 100_000 })).status).toBe(404);
@@ -1464,7 +1464,7 @@ describe('gifts: auto-apply, pay their bill, inbox', () => {
     const mum = await signUp('mum_bill');
     await fund(sender.token, 2_000_000);
     const q = await electricityQuote(sender.token, 1_000_000, { giftTo: { type: 'username', value: 'mum_bill' }, giftMessage: 'Light for the week ❤️' });
-    expect(q.body.data.giftTo).toMatchObject({ recipient: '@mum_bill', onTela: true });
+    expect(q.body.data.giftTo).toMatchObject({ recipient: '@mum_bill', onTasa: true });
     vt.pay = (b) => delivered(b, { purchased_code: 'Token : 5555-6666' });
     const paid = await pay(sender.token, q.body.data.id);
     expect(paid.body.data).toMatchObject({ status: 'success', title: expect.stringMatching(/^Gift: /), giftTo: { recipient: '@mum_bill' } });
@@ -1486,12 +1486,12 @@ describe('gifts: auto-apply, pay their bill, inbox', () => {
     expect((await call('GET', '/api/gifts/inbox', stranger.token)).body.data.items).toEqual([]);
   });
 
-  it('holds a "pay their bill" gift for a phone that is not on Tela, and shows it once they join', async () => {
+  it('holds a "pay their bill" gift for a phone that is not on Tasa, and shows it once they join', async () => {
     const sender = await signUp();
     await fund(sender.token, 1_000_000);
     const newPhone = '08066600001';
     const q = await airtimeQuote(sender.token, newPhone, 100_000, { giftTo: { type: 'phone', value: newPhone } });
-    expect(q.body.data.giftTo).toMatchObject({ onTela: false });
+    expect(q.body.data.giftTo).toMatchObject({ onTasa: false });
     await pay(sender.token, q.body.data.id);
 
     const otp = await call('POST', '/api/auth/otp', undefined, { type: 'phone', value: newPhone });
@@ -1661,10 +1661,10 @@ describe('closing an account with a small balance', () => {
   it('takes nothing on a wrong PIN or while a payment is pending', async () => {
     const me = await leaveBalance(4_000);
     expect((await call('DELETE', '/api/me', me.token, { pin: '1357', forfeitAmount: 4_000 })).body.code).toBe('PIN_INCORRECT');
-    await TransactionModel.create({ reference: 'TLTESTPENDING1', user: me.userId, kind: 'bill', direction: 'debit', status: 'pending', amount: 1, fee: 0, total: 1 });
+    await TransactionModel.create({ reference: 'TSTESTPENDING1', user: me.userId, kind: 'bill', direction: 'debit', status: 'pending', amount: 1, fee: 0, total: 1 });
     expect((await close(me.token, { forfeitAmount: 4_000 })).body.code).toBe('ACCOUNT_HAS_PENDING');
     expect(await balance(me.token)).toBe(4_000);
-    await TransactionModel.deleteOne({ reference: 'TLTESTPENDING1' });
+    await TransactionModel.deleteOne({ reference: 'TSTESTPENDING1' });
   });
 });
 
@@ -1741,7 +1741,7 @@ describe('back office', () => {
     const support = await asSupport();
     const me = await signUp();
     await call('POST', `/api/admin/users/${me.userId}/status`, support, { status: 'suspended' });
-    await call('POST', '/api/admin/staff', support, { name: 'Nope', email: 'nope@tela.test', role: 'finance', password: 'a-very-long-password' });
+    await call('POST', '/api/admin/staff', support, { name: 'Nope', email: 'nope@tasa.test', role: 'finance', password: 'a-very-long-password' });
 
     await vi.waitFor(async () => {
       const { items } = (await call('GET', '/api/admin/audit?limit=5', finance)).body.data;
@@ -1781,7 +1781,7 @@ describe('profile photos', () => {
   const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(100)]);
 
   async function upload(token: string, content: Buffer, type = 'image/jpeg') {
-    const boundary = 'tela-test-boundary';
+    const boundary = 'tasa-test-boundary';
     const payload = Buffer.concat([
       Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="x.jpg"\r\nContent-Type: ${type}\r\n\r\n`),
       content,
@@ -1800,8 +1800,8 @@ describe('profile photos', () => {
     const me = await signUp();
     const res = await upload(me.token, PNG, 'image/jpeg');
     expect(res.status).toBe(200);
-    expect(res.body.data.avatarUrl).toMatch(new RegExp(`^https://cdn\\.tela\\.test/avatars/${me.userId}/.+\\.png$`));
-    const key = res.body.data.avatarUrl.replace('https://cdn.tela.test/', '');
+    expect(res.body.data.avatarUrl).toMatch(new RegExp(`^https://cdn\\.tasa\\.test/avatars/${me.userId}/.+\\.png$`));
+    const key = res.body.data.avatarUrl.replace('https://cdn.tasa.test/', '');
     expect(r2Objects.get(key)).toMatchObject({ contentType: 'image/png', size: PNG.length });
     expect((await call('GET', '/api/me', me.token)).body.data.avatarUrl).toBe(res.body.data.avatarUrl);
   });
@@ -1819,7 +1819,7 @@ describe('profile photos', () => {
 
   it('deletes the old photo on replace and remove, and on closing the account', async () => {
     const queued = async () => (await getQueue(STORAGE_QUEUE).getJobs(['waiting', 'delayed'])).map((j) => j.data.key as string);
-    const keyOf = (url: string) => url.replace('https://cdn.tela.test/', '');
+    const keyOf = (url: string) => url.replace('https://cdn.tasa.test/', '');
     const me = await signUp();
     const first = keyOf((await upload(me.token, JPEG)).body.data.avatarUrl);
     const second = keyOf((await upload(me.token, PNG)).body.data.avatarUrl);
@@ -2696,7 +2696,7 @@ describe('event tickets', () => {
     expect(JSON.parse((await upload((await signUp()).token, png)).body).code).toBe('NOT_A_SELLER');
     expect(JSON.parse((await upload(organiser.token, Buffer.from('<html>'))).body).code).toBe('PHOTO_INVALID');
     const ok = JSON.parse((await upload(organiser.token, png)).body);
-    expect(ok.data.logoUrl).toMatch(/^https:\/\/cdn\.tela\.test\/sellers\//);
+    expect(ok.data.logoUrl).toMatch(/^https:\/\/cdn\.tasa\.test\/sellers\//);
     expect((await call('GET', `/api/events/${e.id}`, organiser.token)).body.data.organiser.logoUrl).toBe(ok.data.logoUrl);
   });
 
@@ -2775,7 +2775,7 @@ describe('event tickets', () => {
     const other = await seller();
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
     const upload = (token: string, bytes: Buffer) => {
-      const boundary = 'tela-poster';
+      const boundary = 'tasa-poster';
       const payload = Buffer.concat([
         Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="p.png"\r\nContent-Type: image/png\r\n\r\n`),
         bytes,
@@ -2792,7 +2792,7 @@ describe('event tickets', () => {
     expect(JSON.parse((await upload(organiser.token, Buffer.from('<html>'))).body).code).toBe('PHOTO_INVALID');
     const ok = await upload(organiser.token, png);
     expect(ok.statusCode).toBe(200);
-    expect((await call('GET', `/api/events/${e.id}`, organiser.token)).body.data.imageUrl).toMatch(/^https:\/\/cdn\.tela\.test\/events\//);
+    expect((await call('GET', `/api/events/${e.id}`, organiser.token)).body.data.imageUrl).toMatch(/^https:\/\/cdn\.tasa\.test\/events\//);
   });
 
   it('charges the buyer and the organiser, and pays the organiser the rest', async () => {
@@ -2832,7 +2832,7 @@ describe('event tickets', () => {
     await expectBooksBalanced();
   });
 
-  it('lets the organiser and Tela stop sales, and only Tela undo its own', async () => {
+  it('lets the organiser and Tasa stop sales, and only Tasa undo its own', async () => {
     const organiser = await seller();
     const e = await create(organiser.token);
     const buyer = await signUp();
@@ -3058,7 +3058,7 @@ describe('event tickets', () => {
   });
 
   const multipart = (url: string, token: string, bytes: Buffer, filename = 'f.bin') => {
-    const boundary = 'tela-upload';
+    const boundary = 'tasa-upload';
     return app.inject({
       method: 'POST',
       url,
@@ -3143,7 +3143,7 @@ describe('event tickets', () => {
   const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64, 1)]);
   /** POST /api/seller/verification, as the app sends it. */
   const submitVerification = (token: string, parts: { idType?: string; photo?: Buffer; id?: Buffer }) => {
-    const boundary = 'tela-kyc';
+    const boundary = 'tasa-kyc';
     const chunks: Buffer[] = [];
     if (parts.idType) chunks.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="idType"\r\n\r\n${parts.idType}\r\n`));
     for (const name of ['photo', 'id'] as const) {
@@ -3263,7 +3263,7 @@ describe('event tickets', () => {
     expect((await call('POST', '/api/events', organiser.token, event())).body.code).toBe('SELLER_SUSPENDED');
     expect((await withdraw(organiser.token, 10_000)).body.code).toBe('SELLER_SUSPENDED');
     expect((await call('POST', '/api/quotes', organiser.token, { kind: 'ticket_payout', amount: 10_000 })).body.code).toBe('SELLER_SUSPENDED');
-    // Tela can't quietly undo it one event at a time.
+    // Tasa can't quietly undo it one event at a time.
     expect((await call('POST', `/api/admin/events/${onSale.id}/sales`, support, { paused: false })).body.code).toBe('SELLER_SUSPENDED');
     // What buyers already have keeps working.
     expect((await call('POST', `/api/tickets/${tickets[0].id}/refund`, buyer.token)).status).toBe(200);
@@ -3490,8 +3490,8 @@ describe('feature switches and maintenance', () => {
   let superToken: string | undefined;
   const asSuperAdmin = async () => {
     if (superToken) return superToken;
-    await AdminModel.create({ name: 'Switchboard', email: 'switchboard@tela.test', role: 'super_admin', passwordHash: await bcrypt.hash('correct-horse', 4) });
-    superToken = (await call('POST', '/api/auth/admin/login', undefined, { email: 'switchboard@tela.test', password: 'correct-horse' })).body.data.accessToken as string;
+    await AdminModel.create({ name: 'Switchboard', email: 'switchboard@tasa.test', role: 'super_admin', passwordHash: await bcrypt.hash('correct-horse', 4) });
+    superToken = (await call('POST', '/api/auth/admin/login', undefined, { email: 'switchboard@tasa.test', password: 'correct-horse' })).body.data.accessToken as string;
     return superToken;
   };
   afterEach(async () => {
@@ -3819,7 +3819,7 @@ describe('groups and dues', () => {
     expect((await call('GET', `/api/groups/${g.id}/members`, member.token)).status).toBe(403);
     expect((await call('POST', `/api/groups/${g.id}/members/${pending[0].id}/approve`, owner.token)).body.data).toMatchObject({ status: 'active', periodsOwed: 1, amountOwed: 100_000 });
 
-    // Three months: this one and two ahead. 1% to Tela from what the group receives.
+    // Three months: this one and two ahead. 1% to Tasa from what the group receives.
     await fund(member.token, 1_000_000);
     const dueId = g.dues[0].id;
     const q = await call('POST', '/api/quotes', member.token, { kind: 'group_dues', groupId: g.id, items: [{ dueId, periods: [0, 1, 2] }] });
@@ -3877,7 +3877,7 @@ describe('groups and dues', () => {
         ]),
       });
     expect(JSON.parse((await upload(owner.token, Buffer.from('<html>'))).body).code).toBe('PHOTO_INVALID');
-    expect(JSON.parse((await upload(owner.token, groupPng)).body).data.logoUrl).toMatch(/^https:\/\/cdn\.tela\.test\/groups\//);
+    expect(JSON.parse((await upload(owner.token, groupPng)).body).data.logoUrl).toMatch(/^https:\/\/cdn\.tasa\.test\/groups\//);
     await call('PATCH', `/api/groups/${g.id}`, owner.token, { name: 'Old Boys' });
     // The website's invite page: no sign-in, just the name and picture.
     const open = JSON.parse((await app.inject({ method: 'GET', url: `/api/public/groups/${g.inviteCode.toLowerCase()}` })).body);
@@ -4169,7 +4169,7 @@ describe('split bills', () => {
     // Everyone who paid in sees the receipt and the token, not just the starter.
     expect((await call('GET', `/api/splits/${split.id}`, c.token)).body.data.result).toMatchObject({
       status: 'success',
-      reference: expect.stringMatching(/^TLB/),
+      reference: expect.stringMatching(/^TSB/),
       token: expect.stringContaining('1234'),
       units: '42.1 kWh',
     });
@@ -4301,7 +4301,7 @@ describe('paying on the website', () => {
       bill: { serviceId: 'electricity', provider: 'IKEDC', customerName: 'ADAEZE OKAFOR' },
       payTo: { accountNumber: '8787652431' },
     });
-    expect(created.reference).toMatch(/^TLY/);
+    expect(created.reference).toMatch(/^TSY/);
     expect(created.key).toMatch(/^[a-f0-9]{48}$/);
     // The reference alone shows nothing.
     expect((await status(created.reference, 'a'.repeat(48))).statusCode).toBe(404);
@@ -4319,7 +4319,7 @@ describe('paying on the website', () => {
     vt.pay = (b) => delivered(b);
 
     const done = JSON.parse((await status(created.reference, created.key)).body).data;
-    expect(done).toMatchObject({ status: 'delivered', result: { token: expect.stringContaining('5555'), units: '31.4 kWh', reference: expect.stringMatching(/^TLB/) } });
+    expect(done).toMatchObject({ status: 'delivered', result: { token: expect.stringContaining('5555'), units: '31.4 kWh', reference: expect.stringMatching(/^TSB/) } });
     expect((await smsTo('+2348035550101')).some((t) => t.includes('5555 6666') && t.includes('45098273614'))).toBe(true);
     // They gave an email, so the receipt goes there too: the token, and a link back to the order.
     const mail = (await getQueue('notifications').getJobs(['waiting', 'delayed'])).find((j) => j.name === 'email' && j.data.to === 'buyer@example.com');
@@ -4327,7 +4327,7 @@ describe('paying on the website', () => {
     expect(mail?.data.html).toContain('5555 6666 7777 8888 9999');
     expect(mail?.data.html).toContain(`/pay/order/${created.reference}?key=${created.key}`);
     expect(mail?.data.text).toContain('5555 6666');
-    // It's that number's Tela account: the payment is in its history, the wallet back to zero.
+    // It's that number's Tasa account: the payment is in its history, the wallet back to zero.
     const owner = await UserModel.findOne({ phone: '+2348035550101' });
     expect(owner).toMatchObject({ status: 'active' });
     expect(owner!.fullName).toBeUndefined();
@@ -4347,7 +4347,7 @@ describe('paying on the website', () => {
     await expectBooksBalanced();
   });
 
-  it('keeps the money in the number’s Tela wallet when the bill fails or the transfer is short, for whoever signs up with it', async () => {
+  it('keeps the money in the number’s Tasa wallet when the bill fails or the transfer is short, for whoever signs up with it', async () => {
     const phone = '08035550202';
     // VTpass turns it down: the bill's refund lands in the wallet, and they're told where.
     const first = JSON.parse((await order({ bill: meter, phone })).body).data;
@@ -4382,7 +4382,7 @@ describe('paying on the website', () => {
     const someone = await UserModel.findOne({ phone: '+2348035550303' });
     await GuestOrderModel.insertMany(
       Array.from({ length: 5 }, (_, i) => ({
-        reference: `TLYTEST000000${i}`,
+        reference: `TSYTEST000000${i}`,
         user: someone!._id,
         phone: '+2348035550303',
         bill: { serviceId: 'electricity', provider: 'IKEDC', account: '45098273614' },
@@ -4394,5 +4394,201 @@ describe('paying on the website', () => {
       })),
     );
     expect(JSON.parse((await order({ bill: meter, phone: '08035550303' })).body).code).toBe('GUEST_DAILY_LIMIT');
+  });
+});
+
+describe('students, and dues receipts', () => {
+  const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(100)]);
+  let schoolSeq = 0;
+
+  /** Multipart with one file, plus any text fields, as the app sends it. */
+  async function upload(url: string, token: string, file: { name: string; content: Buffer }, fields: Record<string, string> = {}) {
+    const boundary = 'tasa-test-boundary';
+    const payload = Buffer.concat([
+      ...Object.entries(fields).map(([k, v]) => Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${k}"\r\n\r\n${v}\r\n`)),
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${file.name}"; filename="x.jpg"\r\nContent-Type: image/jpeg\r\n\r\n`),
+      file.content,
+      Buffer.from(`\r\n--${boundary}--\r\n`),
+    ]);
+    const res = await app.inject({ method: 'POST', url, headers: { authorization: `Bearer ${token}`, 'content-type': `multipart/form-data; boundary=${boundary}` }, payload });
+    return { status: res.statusCode, body: res.json() };
+  }
+
+  const school = async (over: Record<string, unknown> = {}) => {
+    const n = ++schoolSeq;
+    const res = await call('POST', '/api/admin/schools', await asCompliance(), {
+      name: `University of Testing ${n}`,
+      shortName: `UT${n}`,
+      kind: 'university',
+      state: 'Lagos',
+      emailDomains: [`stu${n}.ut.edu.ng`],
+      active: true,
+      ...over,
+    });
+    expect(res.status).toBe(201);
+    return res.body.data as { id: string; emailDomains: string[] };
+  };
+  const profile = (schoolId: string, over: Record<string, unknown> = {}) => ({
+    schoolId,
+    faculty: 'Science',
+    department: 'Computer Science',
+    programme: 'undergraduate',
+    level: 3,
+    matricNumber: `190401${String(100 + ++schoolSeq)}`,
+    admissionYear: 2023,
+    ...over,
+  });
+  /** Signed up with an ID on file: allowed to run a group. */
+  const withId = async () => {
+    const user = await signUp();
+    await call('POST', '/api/me/nin', user.token, { nin: '12345678901' });
+    return user;
+  };
+  const duesGroup = (over: Record<string, unknown> = {}) => ({
+    name: 'Computer Science 300L 2025/26',
+    dues: [{ name: 'Departmental dues', kind: 'recurring', period: 'yearly', amount: 500_000 }],
+    fields: [{ label: 'Matric number', required: true }],
+    bankCode: '035',
+    accountNumber: '9876543210',
+    ...over,
+  });
+
+  it('verifies a student by school email, keeps matric numbers to one account, and undoes it when they change school details', async () => {
+    const s = await school();
+    const hidden = await school({ active: false });
+    const me = await signUp();
+    expect((await call('GET', '/api/students/me', me.token)).body.data).toBeNull();
+    const logo = await upload(`/api/admin/schools/${s.id}/logo`, await asCompliance(), { name: 'file', content: JPEG });
+    expect(logo.body.data.logoUrl).toMatch(/\/schools\//);
+    expect((await upload(`/api/admin/schools/${s.id}/logo`, await asSupport(), { name: 'file', content: JPEG })).status).toBe(403);
+    const listed = (await call('GET', `/api/students/schools?search=${encodeURIComponent('Testing')}`, me.token)).body.data.map((x: { id: string }) => x.id);
+    expect(listed).toContain(s.id);
+    expect((await call('GET', '/api/students/schools?search=Testing', me.token)).body.data.find((x: { id: string }) => x.id === s.id).logoUrl).toBe(logo.body.data.logoUrl);
+    expect(listed).not.toContain(hidden.id);
+    // "Are you a student?" comes first: no details saved without accepting the terms.
+    expect((await call('GET', '/api/students/terms', me.token)).body.data).toMatchObject({ version: 1, accepted: false, points: expect.any(Array) });
+    expect((await call('PUT', '/api/students/me', me.token, profile(s.id))).body.code).toBe('STUDENT_TERMS_REQUIRED');
+    expect((await call('POST', '/api/students/terms', me.token, { acceptTerms: 2 })).body.code).toBe('STUDENT_TERMS_CHANGED');
+    expect((await call('POST', '/api/students/terms', me.token, { acceptTerms: 1 })).body.data.accepted).toBe(true);
+    expect((await call('PUT', '/api/students/me', me.token, profile(hidden.id))).body.code).toBe('SCHOOL_UNAVAILABLE');
+    expect((await call('POST', '/api/students/me/email', me.token, { email: 'me@gmail.com' })).body.code).toBe('STUDENT_PROFILE_MISSING');
+
+    const saved = await call('PUT', '/api/students/me', me.token, profile(s.id, { department: 'Dept. of Computer Science', matricNumber: 'csc/2023/041' }));
+    expect(saved.body.data).toMatchObject({ matricNumber: 'CSC/2023/041', school: { id: s.id }, verification: { status: 'unsubmitted' } });
+    expect((await call('POST', '/api/students/me/email', me.token, { email: 'me@gmail.com' })).body.code).toBe('SCHOOL_EMAIL_INVALID');
+    const email = `ada@sub.${s.emailDomains[0]}`;
+    const sent = await call('POST', '/api/students/me/email', me.token, { email });
+    expect(sent.status).toBe(200);
+    expect((await call('POST', '/api/students/me/email/verify', me.token, { email, code: '000000' })).status).toBe(401);
+    const verified = await call('POST', '/api/students/me/email/verify', me.token, { email, code: sent.body.data.code });
+    expect(verified.body.data.verification).toMatchObject({ status: 'verified', method: 'email', email });
+
+    // Nobody else can be verified as them.
+    const other = await signUp();
+    await call('POST', '/api/students/terms', other.token, { acceptTerms: 1 });
+    expect((await call('PUT', '/api/students/me', other.token, profile(s.id, { matricNumber: 'CSC/2023/041' }))).body.code).toBe('MATRIC_TAKEN');
+
+    // Levels run within a programme: JUPEB has one year, an ND reads ND1/ND2.
+    expect((await call('PUT', '/api/students/me', me.token, profile(s.id, { matricNumber: 'CSC/2023/041', programme: 'jupeb', level: 2 }))).status).toBe(400);
+    expect((await call('PUT', '/api/students/me', me.token, profile(s.id, { department: 'Computer Science', matricNumber: 'CSC/2023/041', programme: 'nd', level: 2 }))).body.data).toMatchObject({ programme: 'nd', level: 2, levelLabel: 'ND2' });
+    // A new level is just a new session; a new department needs verifying again.
+    expect((await call('PUT', '/api/students/me', me.token, profile(s.id, { department: 'Computer Science', matricNumber: 'CSC/2023/041', level: 4 }))).body.data.verification.status).toBe('verified');
+    expect((await call('PUT', '/api/students/me', me.token, profile(s.id, { department: 'Physics', matricNumber: 'CSC/2023/041' }))).body.data.verification.status).toBe('unsubmitted');
+    expect((await call('GET', `/api/students/departments?schoolId=${s.id}&search=comp`, me.token)).body.data).toEqual([]);
+    expect((await call('GET', `/api/students/departments?schoolId=${s.id}`, me.token)).body.data).toContain('Physics');
+  });
+
+  it('checks a student ID card by hand: encrypted, logged when opened, decided once', async () => {
+    const s = await school({ emailDomains: [] });
+    const me = await signUp();
+    await call('POST', '/api/students/terms', me.token, { acceptTerms: 1 });
+    await call('PUT', '/api/students/me', me.token, profile(s.id));
+    expect((await call('POST', '/api/students/me/email', me.token, { email: 'x@ut.edu.ng' })).body.code).toBe('SCHOOL_EMAIL_UNAVAILABLE');
+    expect((await upload('/api/students/me/card', me.token, { name: 'card', content: Buffer.from('not an image') })).body.code).toBe('PHOTO_INVALID');
+    const sent = await upload('/api/students/me/card', me.token, { name: 'card', content: JPEG });
+    expect(sent.status).toBe(201);
+    expect(sent.body.data.verification).toMatchObject({ status: 'pending', method: 'id_card' });
+    // Stored encrypted: the bucket never holds the photo as sent.
+    const stored = [...r2Objects.entries()].find(([k]) => k.startsWith(`students/${me.userId}/`));
+    expect(stored?.[1].body?.equals(JPEG)).toBe(false);
+
+    const queue = (await call('GET', '/api/admin/students?status=pending', await asCompliance())).body.data.items;
+    expect(queue.map((x: { id: string }) => x.id)).toContain(me.userId);
+    expect((await call('POST', `/api/admin/students/${me.userId}/card`, await asSupport())).status).toBe(403);
+    const card = await app.inject({ method: 'POST', url: `/api/admin/students/${me.userId}/card`, headers: { authorization: `Bearer ${await asCompliance()}` } });
+    expect(card.statusCode).toBe(200);
+    expect(card.rawPayload.equals(JPEG)).toBe(true);
+    expect(await AdminAuditModel.exists({ route: '/api/admin/students/:id/card', 'params.id': me.userId })).toBeTruthy();
+
+    const emitted = vi.spyOn(bus, 'emit');
+    const rejected = await call('POST', `/api/admin/students/${me.userId}/review`, await asCompliance(), { status: 'rejected', reason: 'The photo is blurry' });
+    expect(rejected.body.data.verification).toMatchObject({ status: 'rejected', reason: 'The photo is blurry' });
+    expect((await call('POST', `/api/admin/students/${me.userId}/review`, await asCompliance(), { status: 'verified' })).body.code).toBe('STUDENT_NOT_PENDING');
+    await upload('/api/students/me/card', me.token, { name: 'card', content: JPEG });
+    expect((await call('POST', `/api/admin/students/${me.userId}/review`, await asCompliance(), { status: 'verified' })).body.data.verification.status).toBe('verified');
+    expect(emitted).toHaveBeenCalledWith('student.verified', expect.objectContaining({ userId: me.userId, status: 'verified' }));
+    emitted.mockRestore();
+    expect((await upload('/api/students/me/card', me.token, { name: 'card', content: JPEG })).body.code).toBe('STUDENT_ALREADY_VERIFIED');
+
+    // Staff can take it back, once.
+    expect((await call('POST', `/api/admin/students/${me.userId}/revoke`, await asSupport(), { reason: 'Card was forged' })).status).toBe(403);
+    const revoked = await call('POST', `/api/admin/students/${me.userId}/revoke`, await asCompliance(), { reason: 'Card was forged' });
+    expect(revoked.body.data.verification).toMatchObject({ status: 'rejected', reason: 'Card was forged', revoked: true });
+    expect((await call('POST', `/api/admin/students/${me.userId}/revoke`, await asCompliance(), { reason: 'Again' })).body.code).toBe('STUDENT_NOT_VERIFIED');
+  });
+
+  it('offers the general faculty list until staff add a school’s own, and shows departments students typed', async () => {
+    const s = await school();
+    const me = await signUp();
+    await call('POST', '/api/students/terms', me.token, { acceptTerms: 1 });
+    await call('PUT', '/api/students/me', me.token, profile(s.id, { faculty: 'Science', department: 'Space Science' }));
+    const email = `${me.userId}@${s.emailDomains[0]}`;
+    const sent = await call('POST', '/api/students/me/email', me.token, { email });
+    await call('POST', '/api/students/me/email/verify', me.token, { email, code: sent.body.data.code });
+    const general = (await call('GET', `/api/students/schools/${s.id}/faculties`, me.token)).body.data;
+    expect(general.general).toBe(true);
+    expect(general.faculties.find((f: { name: string }) => f.name === 'Science').departments).toContain('Computer Science');
+    expect((await call('GET', `/api/admin/schools/${s.id}`, await asSupport())).body.data).toMatchObject({ id: s.id, students: { verified: 1, pending: 0 } });
+    const before = (await call('GET', `/api/admin/schools/${s.id}/faculties`, await asSupport())).body.data;
+    expect(before).toMatchObject({ faculties: [], unlisted: [{ department: 'Space Science', faculty: 'Science', students: 1 }] });
+
+    const saved = await call('PUT', `/api/admin/schools/${s.id}/faculties`, await asSupport(), {
+      faculties: [{ name: 'Physical Sciences', departments: ['Space Science', 'Physics', 'Physics'] }],
+    });
+    expect(saved.body.data).toEqual({ faculties: [{ name: 'Physical Sciences', departments: ['Space Science', 'Physics'] }], unlisted: [] });
+    expect((await call('GET', `/api/students/schools/${s.id}/faculties`, me.token)).body.data).toEqual({ general: false, faculties: saved.body.data.faculties });
+    expect((await call('PUT', `/api/admin/schools/${s.id}/faculties`, await asSupport(), { faculties: [{ name: 'A b', departments: [] }, { name: 'a B', departments: [] }] })).status).toBe(400);
+  });
+
+  it('gives a receipt for each dues payment that anyone can check by its QR link, and nobody can forge', async () => {
+    const rep = await withId();
+    const g = (await call('POST', '/api/groups', rep.token, duesGroup())).body.data;
+    const mate = await signUp();
+    await call('POST', '/api/groups/join', mate.token, { code: g.inviteCode, fields: { matric_number: 'CSC/2023/007', department: 'Computer Science' }, acceptTerms: 1 });
+    await fund(mate.token, 1_000_000);
+    const q = await call('POST', '/api/quotes', mate.token, { kind: 'group_dues', groupId: g.id, items: [{ dueId: g.dues[0].id, periods: [0] }] });
+    const paid = await call('POST', `/api/groups/${g.id}/pay`, mate.token, { quoteId: q.body.data.id, pin: '2580' });
+    expect(paid.status).toBe(201);
+
+    const receipts = (await call('GET', `/api/groups/${g.id}/receipts`, mate.token)).body.data;
+    expect(receipts).toHaveLength(1);
+    expect(receipts[0]).toMatchObject({ reference: paid.body.data.reference, amount: 500_000, dues: [{ name: 'Departmental dues', period: 'yearly', periods: [{ index: 0 }] }] });
+    expect(receipts[0].url).toBe(`${env.SITE_URL}/r/${receipts[0].code}`);
+    expect((await call('GET', `/api/groups/${g.id}/receipts`, (await signUp()).token)).status).toBe(404);
+
+    const checked = await call('GET', `/api/public/receipts/${receipts[0].code}`);
+    expect(checked.status).toBe(200);
+    expect(checked.body.data).toMatchObject({
+      reference: paid.body.data.reference,
+      amount: 500_000,
+      payer: { matricNumber: 'CSC/2023/007' },
+      group: { name: g.name },
+      dues: [{ name: 'Departmental dues', periods: [{ index: 0, start: expect.any(String), end: expect.any(String) }] }],
+    });
+    const forged = `${paid.body.data.reference}-${'0'.repeat(16)}`;
+    expect((await call('GET', `/api/public/receipts/${forged}`)).status).toBe(404);
+    const otherTx = await TransactionModel.findOne({ kind: 'funding', user: mate.userId });
+    expect((await call('GET', `/api/public/receipts/${receipts[0].code.replace(paid.body.data.reference, otherTx!.reference)}`)).status).toBe(404);
+    await expectBooksBalanced();
   });
 });

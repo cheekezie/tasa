@@ -14,11 +14,11 @@ export const BillQuoteSchema = z.object({
   /** VTpass variation code. Required for plan-based bills; to renew TV, pick the same package. */
   planCode: z.string().trim().min(1).max(60).optional(),
   meterType: z.enum(['prepaid', 'postpaid']).default('prepaid'),
-  /** Any code: a user's coupon, a gift, or a Tela promo. */
+  /** Any code: a user's coupon, a gift, or a Tasa promo. */
   couponCode: CouponCodeSchema.optional(),
   /**
    * Without a code: apply the user's own gift/coupon balance (soonest-expiring first) or an
-   * auto-apply Tela promo, whichever takes more off. false = full price.
+   * auto-apply Tasa promo, whichever takes more off. false = full price.
    */
   autoApply: z.boolean().default(true),
   /** "Pay their bill": a gift. The recipient is told (with the token) once it's delivered. */

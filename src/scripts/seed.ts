@@ -14,7 +14,7 @@ async function seed() {
   if (env.SEED_ADMIN_EMAIL && env.SEED_ADMIN_PASSWORD) {
     const email = env.SEED_ADMIN_EMAIL.toLowerCase();
     if (!(await AdminModel.exists({ email }))) {
-      await AdminModel.create({ name: 'Tela Admin', email, role: 'super_admin', passwordHash: await bcrypt.hash(env.SEED_ADMIN_PASSWORD, 12) });
+      await AdminModel.create({ name: 'Tasa Admin', email, role: 'super_admin', passwordHash: await bcrypt.hash(env.SEED_ADMIN_PASSWORD, 12) });
       console.log(`✓ super admin ${email}`);
     } else console.log(`· admin ${email} exists`);
   } else console.log('· SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD not set — no admin created');

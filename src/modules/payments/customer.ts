@@ -6,7 +6,7 @@ import { splitName } from './providers/sayswitch';
 
 /** What we tell SaySwitch about a user. */
 export function customerOf(user: Pick<IUser, '_id' | 'email' | 'phone' | 'fullName' | 'username'>): Customer {
-  const { firstName, lastName } = splitName(user.fullName ?? user.username ?? 'Tela Customer');
+  const { firstName, lastName } = splitName(user.fullName ?? user.username ?? 'Tasa Customer');
   return {
     firstName,
     lastName,

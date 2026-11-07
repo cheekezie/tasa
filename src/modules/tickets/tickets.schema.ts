@@ -203,7 +203,7 @@ export const WithdrawSchema = z.object({
 
 export const AdminEventsQuerySchema = PaginationQuerySchema.extend({
   search: z.string().trim().min(1).max(60).optional(),
-  sales: z.enum(['on_sale', 'paused', 'ended', 'tela_paused']).optional(),
+  sales: z.enum(['on_sale', 'paused', 'ended', 'tasa_paused']).optional(),
   owner: ObjectIdSchema.optional(),
 });
 

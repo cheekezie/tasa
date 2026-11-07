@@ -20,7 +20,7 @@ changes for a wallet product:
 Income and expense accounts carry their dimension, so `/api/admin/reports/pnl` is a sum of real postings:
 `revenue:charges:<scope>[:<service>]`, `revenue:commission:<service>`, `expense:provider_fees:<funding|collection>`,
 `expense:promotions:<couponId>`, `expense:giveaways:<couponId>`. Net = charges + commission − absorbed
-funding fees − promotions − giveaways. User-funded coupons aren't a Tela cost (the creator paid).
+funding fees − promotions − giveaways. User-funded coupons aren't a Tasa cost (the creator paid).
 
 ## Money flows (ledger lines, kobo; assets +, liabilities −)
 
@@ -34,8 +34,8 @@ Coupon/gift wallet +total   · coupon:<id> −pool · revenue −fee
   bill      discount line is coupon:<id> +discount
   close     unclaimed slots back to the owner when cancelled; claimants keep their balance
   settle    coupon:<id> +left · owner wallet −left   (at expiry)
-Tela promo  discount line on the bill debit is expense:promotions:<id> +discount (no pool; budget is a counter)
-Tela coupon/gift  same, to expense:giveaways:<id>; quantity × amount is the ceiling, nothing pre-funded
+Tasa promo  discount line on the bill debit is expense:promotions:<id> +discount (no pool; budget is a counter)
+Tasa coupon/gift  same, to expense:giveaways:<id>; quantity × amount is the ceiling, nothing pre-funded
 Collection  (money into a beneficiary account) = funding, then optional auto-pay bill
 Ticket sale  buyer wallet +total · tickets:<organiser> −(amount − selling fees) · revenue:charges:ticket −fee · revenue:charges:ticket_sale −selling fees
   refund    tickets:<organiser> +(price − selling fee) · revenue:charges:ticket_sale +selling fee · buyer wallet −price  (the buyer's service charge stays)
@@ -95,7 +95,7 @@ The website sells one-off bills without the app: JAMB and WAEC PINs, electricity
 (`src/modules/guest`). No new money flow: a guest order is an ordinary one-time **funding** of the
 wallet belonging to the buyer's phone number, then an automatic **bill** from that wallet.
 
-- The phone number's Tela account is found or created (`UsersService.findOrCreate`, the same as a
+- The phone number's Tasa account is found or created (`UsersService.findOrCreate`, the same as a
   first OTP). Whoever later signs up with that number owns it, and its wallet.
 - The transfer is credited only by `WalletService.reconcileFunding` (SaySwitch re-verified), from
   the webhook, the status page's poll, or the funding sweep. `funding.succeeded` claims the order
@@ -174,7 +174,7 @@ Checked against both providers' docs on 2026-10-28. Marked `UNVERIFIED` in the a
    KYC: whether CBN/SaySwitch require BVN/NIN before issuing permanent accounts (not in their docs).
 2. Amounts are decimal naira strings (matches every sample and attesta-one's findings).
 3. Ticket payouts (`POST /api/v1/bank_transfer`, `GET /api/v1/payout/:reference`), read 2026-11-01. `amount`
-   and `fee` are naira (confirmed with SaySwitch, though the docs say "smallest unit"); kobo inside Tela. Statuses differ per page
+   and `fee` are naira (confirmed with SaySwitch, though the docs say "smallest unit"); kobo inside Tasa. Statuses differ per page
    (`pending`/`completed`/`failed` vs `success`/`pending`/`reversed`/"etc"): success|completed pay out,
    failed|reversed return the money, anything else stays pending → requery at 1m, 5m, 15m, 1h, 3h, 12h →
    `needsReview` (resolve with `/api/admin/transactions/:id/resolve`). Confirmed with SaySwitch: the payout

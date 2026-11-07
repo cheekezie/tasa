@@ -4,7 +4,7 @@ import type { RuleShape } from './charges.calc';
  * Launch charges, seeded on an empty database and then managed by admins at
  * /api/admin/charges. Kobo: 10_000 = ₦100.
  *
- * Business rule: funding looks free — Tela absorbs SaySwitch's fee (booked to
+ * Business rule: funding looks free — Tasa absorbs SaySwitch's fee (booked to
  * expense:provider_fees) — and every transaction carries a charge instead.
  * PLACEHOLDER FIGURES: set the real ones in the admin before launch.
  */

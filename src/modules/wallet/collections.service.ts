@@ -1,6 +1,7 @@
 import type { Types } from 'mongoose';
 import { env } from '../../config/env';
 import { inTransaction, isDuplicateKey } from '../../lib/db';
+import { withLegacy } from '../../lib/references';
 import { notFound } from '../../lib/errors';
 import { bus } from '../../lib/events';
 import { BeneficiariesService } from '../beneficiaries/beneficiaries.service';
@@ -22,7 +23,7 @@ import { recordLateFee } from './wallet.service';
  */
 const accountEmail = (prefix: 'w' | 'b', id: string) => `${prefix}${id}@${env.CUSTOMER_EMAIL_DOMAIN}`;
 
-export const collectionReference = (providerReference: string) => `TLV${providerReference}`.slice(0, 40);
+export const collectionReference = (providerReference: string) => `TSV${providerReference}`.slice(0, 40);
 
 export const toAccountDto = (a: IDedicatedAccount) => ({
   bankName: a.bankName,
@@ -83,7 +84,7 @@ export const CollectionsService = {
    */
   async collect(providerReference: string, hint: { accountNumber?: string; customerCode?: string; providerFee?: number } = {}): Promise<CollectResult> {
     const reference = collectionReference(providerReference);
-    const existing = await TransactionModel.findOne({ reference });
+    const existing = await TransactionModel.findOne({ reference: { $in: withLegacy(reference) } });
     if (existing) {
       if (hint.providerFee !== undefined) await recordLateFee(existing, hint.providerFee, 'collection');
       return { status: 'already_credited', transaction: toTransactionDto(existing) };
@@ -109,7 +110,7 @@ export const CollectionsService = {
     const credit = Math.max(0, paid - fee);
 
     const tx = await inTransaction(async (session) => {
-      if (await TransactionModel.exists({ reference }).session(session)) return null;
+      if (await TransactionModel.exists({ reference: { $in: withLegacy(reference) } }).session(session)) return null;
       const [t] = await TransactionModel.create(
         [
           {
@@ -157,7 +158,7 @@ export const CollectionsService = {
       );
       return t!;
     });
-    if (!tx) return { status: 'already_credited', transaction: toTransactionDto((await TransactionModel.findOne({ reference }))!) };
+    if (!tx) return { status: 'already_credited', transaction: toTransactionDto((await TransactionModel.findOne({ reference: { $in: withLegacy(reference) } }))!) };
 
     if (beneficiary) {
       bus.emit('beneficiary.collection', { transactionId: tx.id, beneficiaryId: beneficiary.id });

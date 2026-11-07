@@ -1,5 +1,5 @@
 /**
- * Everything Tela needs from its collection provider (SaySwitch). Bill vending is a
+ * Everything Tasa needs from its collection provider (SaySwitch). Bill vending is a
  * separate provider — see modules/bills/providers. Amounts are always integer kobo on
  * this side of the interface; the adapter converts to the provider's units.
  */

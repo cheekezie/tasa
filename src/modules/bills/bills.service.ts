@@ -74,7 +74,7 @@ function vendRequest(requestId: string, bill: NonNullable<ITransaction['bill']>,
 async function resolveBillGift(senderId: string, r: Recipient, message?: string) {
   const user = await UsersService.resolve(r);
   if (user?.id === senderId) throw unprocessable("That's you — pay it as a normal bill", 'SELF_GIFT');
-  if (!user && r.type === 'username') throw notFound(`There's no Tela user @${r.value}`);
+  if (!user && r.type === 'username') throw notFound(`There's no Tasa user @${r.value}`);
   return {
     label: recipientLabel(r),
     ...(user ? { user: user._id, name: publicName(user) } : r.type === 'phone' ? { phone: r.value } : { email: r.value }),
@@ -211,7 +211,7 @@ export const BillsService = {
         id: applied.coupon._id,
         code: applied.coupon.code,
         kind: applied.coupon.kind,
-        fundedBy: applied.coupon.kind === 'promo' ? 'tela' : applied.coupon.fundedBy,
+        fundedBy: applied.coupon.kind === 'promo' ? 'tasa' : applied.coupon.fundedBy,
         title: applied.coupon.title,
         auto: !input.couponCode,
       }
@@ -300,7 +300,7 @@ export const BillsService = {
           transactionId: t._id,
           lines: [
             { account: opts.split?.pot ?? Accounts.wallet(userId), amount: quote.total },
-            // A user's coupon pool pays its discount; Tela promos and giveaways are expenses.
+            // A user's coupon pool pays its discount; Tasa promos and giveaways are expenses.
             ...(quote.coupon?.id ? [{ account: CouponsService.discountAccount(quote.coupon), amount: quote.discount }] : []),
             { account: Accounts.billsInFlight, amount: -quote.amount },
             { account: Accounts.charges('bill', bill.serviceId), amount: -quote.fee },

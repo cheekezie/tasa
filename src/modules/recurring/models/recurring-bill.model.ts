@@ -2,7 +2,7 @@ import { RECURRING_FREQUENCIES, type RecurringFrequency } from '../schedule';
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose';
 import { SERVICE_IDS, type ServiceId } from '../../../lib/schemas';
 
-/** A bill Tela pays from the wallet on a schedule. Created with the user's PIN. */
+/** A bill Tasa pays from the wallet on a schedule. Created with the user's PIN. */
 export interface IRecurringBill {
   _id: Types.ObjectId;
   user: Types.ObjectId;

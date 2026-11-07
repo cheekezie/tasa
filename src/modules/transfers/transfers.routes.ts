@@ -5,7 +5,7 @@ import { SendTransferSchema } from './transfers.schema';
 import { TransfersService } from './transfers.service';
 import { requireFeature } from '../config/config.routes';
 
-/** `/api/transfers` — Tela to Tela. Quote with POST /api/quotes { kind: 'transfer' }. */
+/** `/api/transfers` — Tasa to Tasa. Quote with POST /api/quotes { kind: 'transfer' }. */
 export async function transfersRoutes(app: FastifyInstance) {
   app.addHook('preHandler', app.authenticate);
   app.addHook('preHandler', requireActor('user'));

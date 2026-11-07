@@ -9,7 +9,7 @@ export const UsernameSchema = z
   .transform((v) => v.replace(/^@/, ''))
   .refine((v) => /^[a-z][a-z0-9_]{2,19}$/.test(v), 'Usernames are 3–20 letters, numbers or _ and start with a letter');
 
-const RESERVED = new Set(['tela', 'admin', 'support', 'help', 'root', 'system', 'official']);
+const RESERVED = new Set(['tasa', 'tela', 'admin', 'support', 'help', 'root', 'system', 'official']);
 
 export const UpdateProfileSchema = z
   .object({

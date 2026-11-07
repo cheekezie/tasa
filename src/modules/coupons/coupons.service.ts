@@ -17,7 +17,7 @@ import { UserModel } from '../users/models/user.model';
 import { UsersService, publicName, staffUserLabels } from '../users/users.service';
 import { adminNames } from '../admins/admins.service';
 import { recipientLabel, type Recipient } from '../../lib/schemas';
-import type { CouponQuoteInput, CreatePromoInput, GiftQuoteInput, TelaCouponInput, UpdatePromoInput } from './coupons.schema';
+import type { CouponQuoteInput, CreatePromoInput, GiftQuoteInput, TasaCouponInput, UpdatePromoInput } from './coupons.schema';
 import {
   CouponClaimModel,
   CouponModel,
@@ -38,7 +38,7 @@ const generateCode = () => `${randomCode(4)}-${randomCode(4)}`;
 /** What checkout knows about the bill when it evaluates a code. */
 export type BillContext = { serviceId: ServiceId; provider: string; amount: number; fee: number };
 /** How a quote / transaction refers to the code it used. */
-export type CouponRef = { id: Types.ObjectId; kind: CouponKind; fundedBy?: 'user' | 'tela' };
+export type CouponRef = { id: Types.ObjectId; kind: CouponKind; fundedBy?: 'user' | 'tasa' };
 
 const reject = (message: string, code: string) => unprocessable(message, code);
 
@@ -58,7 +58,7 @@ export function describePromo(p: PromoRules) {
 async function resolveGiftRecipient(senderId: string | null, r: Recipient, recipientName?: string) {
   const user = await UsersService.resolve(r);
   if (senderId && user?.id === senderId) throw unprocessable("You can't gift yourself", 'SELF_GIFT');
-  if (!user && r.type === 'username') throw notFound(`There's no Tela user @${r.value}`);
+  if (!user && r.type === 'username') throw notFound(`There's no Tasa user @${r.value}`);
   return {
     recipientLabel: recipientLabel(r),
     recipientName: recipientName ?? (user ? publicName(user) : undefined),
@@ -102,7 +102,7 @@ export function toCouponDto(c: ICoupon, viewerId?: string, claim?: ICouponClaim 
     id: c._id.toString(),
     code: c.code,
     kind: c.kind,
-    fundedBy: c.kind === 'promo' ? ('tela' as const) : c.fundedBy,
+    fundedBy: c.kind === 'promo' ? ('tasa' as const) : c.fundedBy,
     title: c.title,
     description: c.description ?? null,
     services: c.services,
@@ -241,7 +241,7 @@ export const CouponsService = {
                   code: generateCode(),
                   kind,
                   owner: userId,
-                  title: `Gift from ${sender?.fullName ?? `@${sender?.username ?? 'a Tela user'}`}`,
+                  title: `Gift from ${sender?.fullName ?? `@${sender?.username ?? 'a Tasa user'}`}`,
                   unitAmount: quote.amount,
                   quantity: 1,
                   services: gift!.serviceId ? [gift!.serviceId] : 'all',
@@ -399,7 +399,7 @@ export const CouponsService = {
 
   /** Where a discount's money comes from in the ledger. */
   discountAccount: (ref: CouponRef) =>
-    ref.kind === 'promo' ? Accounts.promotions(ref.id) : ref.fundedBy === 'tela' ? Accounts.giveaways(ref.id) : Accounts.coupon(ref.id),
+    ref.kind === 'promo' ? Accounts.promotions(ref.id) : ref.fundedBy === 'tasa' ? Accounts.giveaways(ref.id) : Accounts.coupon(ref.id),
 
   /**
    * Inside the bill purchase transaction: takes the discount from the user's claim (and the
@@ -564,7 +564,7 @@ export const CouponsService = {
 
   /**
    * Stops new claims. A user-funded coupon returns its unclaimed money to the owner now;
-   * a Tela giveaway simply stops costing more. Claimants keep their balance until expiry.
+   * a Tasa giveaway simply stops costing more. Claimants keep their balance until expiry.
    */
   async close(coupon: ICoupon) {
     const couponId = coupon._id;
@@ -650,20 +650,20 @@ export const CouponsService = {
 
   describeGift(c: ICoupon, senderName: string) {
     const what = c.services === 'all' ? 'any bill' : c.services.join(', ');
-    return `${senderName} gifted you ${formatNaira(c.unitAmount!)} for ${what} on Tela. Use code ${c.code} at checkout before ${c.expiresAt.toDateString()}.`;
+    return `${senderName} gifted you ${formatNaira(c.unitAmount!)} for ${what} on Tasa. Use code ${c.code} at checkout before ${c.expiresAt.toDateString()}.`;
   },
 
-  // ── Tela giveaways and gifts (admin) ──────────────────────────────────
+  // ── Tasa giveaways and gifts (admin) ──────────────────────────────────
   /**
-   * A coupon or gift Tela pays for: launch giveaways, compensation for a failed token,
+   * A coupon or gift Tasa pays for: launch giveaways, compensation for a failed token,
    * partner campaigns. No money moves now; each use is booked to `expense:giveaways:<id>`.
    */
-  async createTelaCoupon(input: TelaCouponInput, adminId: string) {
+  async createTasaCoupon(input: TasaCouponInput, adminId: string) {
     try {
       const c = await CouponModel.create({
         code: input.code ?? generateCode(),
         kind: input.kind,
-        fundedBy: 'tela',
+        fundedBy: 'tasa',
         owner: null,
         createdBy: adminId,
         title: input.title,
@@ -683,7 +683,7 @@ export const CouponsService = {
     }
   },
 
-  /** A coupon or gift with what it has cost (Tela) or what's left in its pool (user). */
+  /** A coupon or gift with what it has cost (Tasa) or what's left in its pool (user). */
   async adminCoupon(c: ICoupon, names?: Awaited<ReturnType<typeof staffUserLabels>>, admins?: Map<string, string>) {
     const people = names ?? (await staffUserLabels([c.owner, c.recipientUser]));
     const staff = admins ?? (await adminNames([c.createdBy]));
@@ -713,16 +713,16 @@ export const CouponsService = {
       stats: {
         claims: c.claimed,
         uses: agg?.uses ?? 0,
-        /** Discount given so far, kobo. For Tela coupons this is the cost. */
+        /** Discount given so far, kobo. For Tasa coupons this is the cost. */
         used,
-        ...(c.fundedBy === 'tela'
+        ...(c.fundedBy === 'tasa'
           ? { cost: await LedgerService.balance(Accounts.giveaways(c._id)), maxExposure, exposureLeft: Math.max(0, maxExposure - used) }
           : { poolLeft: -(await LedgerService.balance(Accounts.coupon(c._id))) || 0 }),
       },
     };
   },
 
-  async adminList(q: { kind?: 'coupon' | 'gift'; fundedBy?: 'user' | 'tela'; status?: ICoupon['status']; owner?: string; code?: string; page: number; limit: number }) {
+  async adminList(q: { kind?: 'coupon' | 'gift'; fundedBy?: 'user' | 'tasa'; status?: ICoupon['status']; owner?: string; code?: string; page: number; limit: number }) {
     const filter: FilterQuery<ICoupon> = {
       kind: q.kind ?? { $in: ['coupon', 'gift'] },
       ...(q.fundedBy && { fundedBy: q.fundedBy }),
@@ -780,7 +780,7 @@ export const CouponsService = {
     return this.adminCoupon((await CouponModel.findById(id))!);
   },
 
-  // ── Tela promotions (admin) ───────────────────────────────────────────
+  // ── Tasa promotions (admin) ───────────────────────────────────────────
   async createPromo(input: CreatePromoInput, adminId?: string) {
     const { code, title, description, services, providers, startsAt, expiresAt, ...rules } = input;
     try {

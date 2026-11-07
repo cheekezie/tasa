@@ -11,10 +11,10 @@ import { AdminModel, type AdminRole } from '../modules/admins/models/admin.model
  */
 export const DEV_ADMIN_PASSWORD = 'tela-dev-admin';
 export const DEV_ADMINS: { name: string; email: string; role: AdminRole }[] = [
-  { name: 'Sam Super', email: 'super@tela.dev', role: 'super_admin' },
-  { name: 'Fola Finance', email: 'finance@tela.dev', role: 'finance' },
-  { name: 'Sade Support', email: 'support@tela.dev', role: 'support' },
-  { name: 'Kemi Compliance', email: 'compliance@tela.dev', role: 'compliance' },
+  { name: 'Sam Super', email: 'super@tasa.dev', role: 'super_admin' },
+  { name: 'Fola Finance', email: 'finance@tasa.dev', role: 'finance' },
+  { name: 'Sade Support', email: 'support@tasa.dev', role: 'support' },
+  { name: 'Kemi Compliance', email: 'compliance@tasa.dev', role: 'compliance' },
 ];
 
 async function seedDevAdmins() {

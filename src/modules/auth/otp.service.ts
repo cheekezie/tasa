@@ -10,8 +10,8 @@ const TTL_SECONDS = 10 * 60;
 const RESEND_SECONDS = 60;
 const MAX_TRIES = 5;
 
-/** `login` signs in or up; `link` proves a signed-in user owns a phone/email they're adding. */
-export type OtpPurpose = 'login' | 'link' | 'pin_reset';
+/** `login` signs in or up; `link` proves a signed-in user owns a phone/email they're adding; `student_email` proves they're at a school. */
+export type OtpPurpose = 'login' | 'link' | 'pin_reset' | 'student_email';
 
 const id = (purpose: OtpPurpose, c: Contact) => `${purpose}:${c.type}:${c.value}`;
 const key = (purpose: OtpPurpose, c: Contact) => `otp:${id(purpose, c)}`;
@@ -20,7 +20,7 @@ const cooldownKey = (purpose: OtpPurpose, c: Contact) => `otp:cooldown:${id(purp
 const hash = (purpose: OtpPurpose, c: Contact, code: string) => sha256(`${id(purpose, c)}:${code}`);
 
 async function deliver(c: Contact, code: string, purpose: OtpPurpose) {
-  const what = purpose === 'login' ? 'Your Tela code' : 'Your Tela verification code';
+  const what = purpose === 'login' ? 'Your Tasa code' : 'Your Tasa verification code';
   if (c.type === 'phone') {
     await sms.send(c.value, `${what} is ${code}. It expires in 10 minutes. Never share it with anyone.`);
     return;
@@ -28,8 +28,8 @@ async function deliver(c: Contact, code: string, purpose: OtpPurpose) {
   await email.send({
     to: c.value,
     subject: `${what}: ${code}`,
-    text: `${what} is ${code}. It expires in 10 minutes. Never share it with anyone — Tela staff will never ask for it.`,
-    html: `<p>${what} is</p><p style="font-size:28px;font-weight:700;letter-spacing:4px">${code}</p><p>It expires in 10 minutes. Never share it with anyone — Tela staff will never ask for it.</p>`,
+    text: `${what} is ${code}. It expires in 10 minutes. Never share it with anyone — Tasa staff will never ask for it.`,
+    html: `<p>${what} is</p><p style="font-size:28px;font-weight:700;letter-spacing:4px">${code}</p><p>It expires in 10 minutes. Never share it with anyone — Tasa staff will never ask for it.</p>`,
   });
 }
 

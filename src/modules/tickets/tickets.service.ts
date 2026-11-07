@@ -5,7 +5,7 @@ import { bus } from '../../lib/events';
 import { getQueue } from '../../lib/queue';
 import { AppError, conflict, notFound, unprocessable } from '../../lib/errors';
 import { formatNaira } from '../../lib/money';
-import { newReference } from '../../lib/references';
+import { newReference, withLegacy } from '../../lib/references';
 import { r2 } from '../../lib/r2';
 import { redis } from '../../lib/redis';
 import { paginate } from '../../lib/response';
@@ -75,7 +75,7 @@ type Organiser = {
   id: string;
   name: string;
   logoUrl: string | null;
-  /** Tela's compliance team has checked who they are. Buyers see a badge for it. */
+  /** Tasa's compliance team has checked who they are. Buyers see a badge for it. */
   verified: boolean;
   events: number;
   rating: number | null;
@@ -134,7 +134,7 @@ async function organisersOf(events: Pick<IEvent, 'owner'>[]) {
     const profile = profiles.get(owner);
     return {
       id: owner,
-      name: profile?.organisation || e.organiserName || 'Tela organiser',
+      name: profile?.organisation || e.organiserName || 'Tasa organiser',
       logoUrl: profile?.logoKey ? r2.publicUrl(profile.logoKey) : null,
       verified: profile?.verification?.status === 'approved',
       events: eventCounts.get(owner) ?? 0,
@@ -290,7 +290,7 @@ async function eventSearch(search: string) {
   };
 }
 
-/** Withdrawals wait while Tela reviews a suspended organiser: the money may need to go back to buyers. */
+/** Withdrawals wait while Tasa reviews a suspended organiser: the money may need to go back to buyers. */
 async function assertNotSuspended(userId: string) {
   if (await SellerModel.exists({ user: userId, 'suspension.active': true })) {
     throw new AppError(403, "Your selling account is suspended, so withdrawals are on hold while we review it.", 'SELLER_SUSPENDED');
@@ -392,7 +392,7 @@ export const TicketsService = {
     const user = await UserModel.findById(userId).select('bvnLast4 ninLast4');
     if (!user?.bvnLast4 && !user?.ninLast4) throw unprocessable('Add your BVN or NIN to sell tickets', 'ID_REQUIRED');
     if (await SellerModel.exists({ user: userId, 'suspension.active': true })) {
-      throw new AppError(403, 'Your selling account is suspended. Contact Tela support.', 'SELLER_SUSPENDED');
+      throw new AppError(403, 'Your selling account is suspended. Contact Tasa support.', 'SELLER_SUSPENDED');
     }
     const bankAccount = bankCode && accountNumber ? await this.verifyBankAccount(bankCode, accountNumber) : undefined;
     const { set } = profileUpdate(profile);
@@ -579,7 +579,7 @@ export const TicketsService = {
     return {
       purchases: rows.map((r) => ({
         id: r._id.toString(),
-        buyer: names.get(r.buyer.toString()) ?? 'Tela user',
+        buyer: names.get(r.buyer.toString()) ?? 'Tasa user',
         tierName: r.tierName,
         quantity: r.quantity,
         /** Kobo, at ticket price: what the buyer paid for the tickets, before charges. */
@@ -595,7 +595,7 @@ export const TicketsService = {
   async addStaff(userId: string, id: string, username: string) {
     const event = await ownedEvent(userId, id);
     const staff = await UserModel.findOne({ username: username.replace(/^@/, '').toLowerCase(), status: 'active' }).select('_id');
-    if (!staff) throw notFound(`There's no Tela user @${username.replace(/^@/, '')}`);
+    if (!staff) throw notFound(`There's no Tasa user @${username.replace(/^@/, '')}`);
     await event.updateOne({ $addToSet: { staff: staff._id } });
     return toOwnerDto((await EventModel.findById(id))!);
   },
@@ -632,13 +632,13 @@ export const TicketsService = {
   },
 
   /** Newest first, a page at a time. `sales` filters on what buyers see now; `owner` is one organiser's events. */
-  async adminEvents(q: { search?: string; sales?: 'on_sale' | 'paused' | 'ended' | 'tela_paused'; owner?: string; page: number; limit: number }) {
+  async adminEvents(q: { search?: string; sales?: 'on_sale' | 'paused' | 'ended' | 'tasa_paused'; owner?: string; page: number; limit: number }) {
     const now = new Date();
     const live = { $or: [{ endsAt: { $gt: now } }, { endsAt: null, startsAt: { $gt: now } }] };
     const over = { $or: [{ endsAt: { $lte: now } }, { endsAt: null, startsAt: { $lte: now } }] };
     const filter: Record<string, unknown> = {
       ...(q.owner && { owner: q.owner }),
-      ...(q.sales === 'tela_paused' && { adminPaused: true }),
+      ...(q.sales === 'tasa_paused' && { adminPaused: true }),
       ...(q.sales === 'paused' && { ...live, $and: [{ $or: [{ salesPaused: true }, { adminPaused: true }] }] }),
       ...(q.sales === 'on_sale' && { ...live, salesPaused: false, adminPaused: false }),
       ...(q.sales === 'ended' && over),
@@ -750,7 +750,7 @@ export const TicketsService = {
       reference: claimed.reference,
       amount: claimed.amount,
       ...claimed.payout!,
-      narration: claimed.kind === 'group_payout' ? `Tela · ${claimed.group?.name ?? 'group dues'}` : 'Tela ticket sales',
+      narration: claimed.kind === 'group_payout' ? `Tasa · ${claimed.group?.name ?? 'group dues'}` : 'Tasa ticket sales',
     });
     return this.applyPayoutResult(claimed._id, result, 'send');
   },
@@ -934,8 +934,8 @@ export const TicketsService = {
   /** To the bill payment wallet. It can't come back: wallet money is for bills, never for a bank. */
   async withdraw(userId: string, amount: number, pin: string, idempotencyKey: string) {
     const key = `ticket-withdrawal:${userId}:${idempotencyKey}`;
-    const reference = `TLW${createHash('sha256').update(key).digest('hex').slice(0, 14).toUpperCase()}`;
-    const replay = () => TransactionModel.findOne({ reference, user: userId });
+    const reference = `TSW${createHash('sha256').update(key).digest('hex').slice(0, 14).toUpperCase()}`;
+    const replay = () => TransactionModel.findOne({ reference: { $in: withLegacy(reference) }, user: userId });
     const done = await replay();
     if (done) return toTransactionDto(done);
 

@@ -7,7 +7,7 @@ export type SplitStatus = (typeof SPLIT_STATUSES)[number];
 
 /**
  * One bill, shared. The starter picks it and who pays what; each share goes into the split's pot
- * (`split:<id>`). When every share is in, Tela pays the bill from the pot. If the deadline passes
+ * (`split:<id>`). When every share is in, Tasa pays the bill from the pot. If the deadline passes
  * first, or the bill fails, everyone gets their share back. Nobody fronts the money.
  */
 export interface ISplit {

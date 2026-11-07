@@ -32,7 +32,7 @@ export interface IQuote {
     customer?: { name: string; address?: string; detail?: { label: string; value: string } };
   };
   /** `auto` = an auto-apply promo the user didn't type. */
-  coupon?: { id: Types.ObjectId; code: string; kind: 'coupon' | 'gift' | 'promo'; fundedBy: 'user' | 'tela'; title: string; auto?: boolean };
+  coupon?: { id: Types.ObjectId; code: string; kind: 'coupon' | 'gift' | 'promo'; fundedBy: 'user' | 'tasa'; title: string; auto?: boolean };
   transfer?: { recipient: Types.ObjectId; username?: string; name: string; note?: string };
   couponCreate?: { title: string; code?: string; quantity: number; unitAmount: number; services: ServiceId[] | 'all'; expiresAt: Date };
   gift?: {
@@ -74,7 +74,7 @@ export interface IQuote {
   beneficiary?: Types.ObjectId;
   /** "Pay their bill" — a bill bought as a gift for someone. */
   giftTo?: {
-    /** Set when the recipient is a Tela user (found by username/phone/email). */
+    /** Set when the recipient is a Tasa user (found by username/phone/email). */
     user?: Types.ObjectId;
     phone?: string;
     email?: string;
@@ -113,7 +113,7 @@ const quoteSchema = new Schema<IQuote>(
       id: { type: Schema.Types.ObjectId, ref: 'Coupon' },
       code: String,
       kind: { type: String, enum: ['coupon', 'gift', 'promo'] },
-      fundedBy: { type: String, enum: ['user', 'tela'] },
+      fundedBy: { type: String, enum: ['user', 'tasa'] },
       title: String,
       auto: Boolean,
     },

@@ -1,8 +1,8 @@
 {
-  "name": "tela-api",
+  "name": "tasa-api",
   "version": "0.1.0",
   "private": true,
-  "description": "Tela backend — wallet, SaySwitch funding and bill payments",
+  "description": "Tasa backend — wallet, SaySwitch funding and bill payments",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -17,7 +17,9 @@
     "seed:promos": "tsx --env-file-if-exists=.env src/scripts/seed-promos.ts",
     "seed:dev-admins": "tsx --env-file-if-exists=.env src/scripts/seed-dev-admins.ts",
     "migrate:group-dues": "tsx --env-file-if-exists=.env src/scripts/migrate-group-dues.ts",
-    "db:local": "mkdir -p .data/db && mongod --replSet rs0 --dbpath .data/db --port 27018 --bind_ip 127.0.0.1"
+    "db:local": "mkdir -p .data/db && mongod --replSet rs0 --dbpath .data/db --port 27018 --bind_ip 127.0.0.1",
+    "migrate:tasa-rename": "tsx --env-file-if-exists=.env src/scripts/migrate-tasa-rename.ts",
+    "seed:schools": "tsx --env-file-if-exists=.env src/scripts/seed-schools.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",

@@ -38,7 +38,7 @@ export function suspensionDto(s: Pick<ISeller, 'suspension'> | null | undefined)
 
 /** For gates elsewhere: why this seller can't run events right now, or null if they can. */
 export function sellingBlock(s: Pick<ISeller, 'verification' | 'suspension'>) {
-  if (s.suspension?.active) return forbidden('Your selling account is suspended. Contact Tela support.');
+  if (s.suspension?.active) return forbidden('Your selling account is suspended. Contact Tasa support.');
   const status = s.verification?.status;
   if (status === 'approved') return null;
   if (status === 'pending') return unprocessable("We're still checking your details. You can create events once you're approved.", 'SELLER_NOT_VERIFIED');
@@ -68,7 +68,7 @@ export const SellerReviewService = {
   async submit(userId: string, { idType, photo, id }: { idType: SellerIdType; photo: Buffer; id: Buffer }) {
     const seller = await SellerModel.findOne({ user: userId });
     if (!seller) throw forbidden('Opt in to selling tickets first');
-    if (seller.suspension?.active) throw forbidden('Your selling account is suspended. Contact Tela support.');
+    if (seller.suspension?.active) throw forbidden('Your selling account is suspended. Contact Tasa support.');
     if (seller.verification?.status === 'approved') throw conflict("You're already verified", 'SELLER_ALREADY_VERIFIED');
     const photoImage = checkImage(photo, 'photo');
     const idImage = checkImage(id, 'ID');
@@ -262,7 +262,7 @@ export const SellerReviewService = {
 
   /**
    * Stops (or lets again) someone organising. Suspending pauses every event still selling, as
-   * Tela, and remembers which; lifting it resumes exactly those. Tickets already sold stay
+   * Tasa, and remembers which; lifting it resumes exactly those. Tickets already sold stay
    * valid, buyers can still refund, and the door can still scan.
    */
   async setSuspension(userId: string, change: { suspended: boolean; reason?: string | undefined }, adminId: string) {

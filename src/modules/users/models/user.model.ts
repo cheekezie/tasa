@@ -7,7 +7,7 @@ export interface IUser {
    * only ever stored after the user proves they own them with a one-time code.
    */
   phone?: string;
-  /** Lowercase, unique handle used for Tela-to-Tela transfers. Set after sign-up. */
+  /** Lowercase, unique handle used for Tasa-to-Tasa transfers. Set after sign-up. */
   username?: string;
   /** Lowercase. A sign-in identity for when SMS doesn't arrive. */
   email?: string;
@@ -31,6 +31,8 @@ export interface IUser {
   /** R2 key of the profile photo. */
   avatarKey?: string;
   pushTokens: string[];
+  /** They said they're a student and accepted the student terms (this version). */
+  studentTerms?: { version: number; at: Date };
   status: 'active' | 'suspended' | 'closed';
   lastLoginAt?: Date;
   createdAt: Date;
@@ -62,6 +64,7 @@ const userSchema = new Schema<IUser>(
     closedAt: Date,
     billPinEnabled: { type: Boolean, default: true },
     pushTokens: { type: [String], default: [] },
+    studentTerms: { version: Number, at: Date },
     status: { type: String, enum: ['active', 'suspended', 'closed'], default: 'active' },
     lastLoginAt: Date,
   },

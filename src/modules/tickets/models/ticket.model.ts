@@ -106,7 +106,7 @@ export interface ISeller {
    * compare a resubmission with what was rejected. A `pending` entry was replaced before review.
    */
   verificationHistory: (SellerVerification & { _id: Types.ObjectId })[];
-  /** Tela stopped them organising: their events are paused as Tela, and withdrawals wait. */
+  /** Tasa stopped them organising: their events are paused as Tasa, and withdrawals wait. */
   suspension?: { active: boolean; reason?: string; at?: Date; by?: Types.ObjectId; liftedAt?: Date };
   /** Every suspension and lift, oldest first: who, why, when. */
   suspensionHistory: { action: 'suspended' | 'lifted'; reason?: string; by: Types.ObjectId; at: Date }[];

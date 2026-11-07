@@ -7,7 +7,7 @@ export type GuestOrderStatus = (typeof GUEST_ORDER_STATUSES)[number];
 /**
  * A one-off bill bought on the website without the app: JAMB, WAEC, electricity, airtime.
  *
- * It rides on two things Tela already does. The bank transfer is an ordinary one-time funding
+ * It rides on two things Tasa already does. The bank transfer is an ordinary one-time funding
  * of the wallet that belongs to the buyer's phone number (an account is made for it if there
  * isn't one: whoever signs up with that number later owns it). Once that funding is credited,
  * the bill is bought from the same wallet as an automatic payment. So a failed bill, or a
@@ -16,7 +16,7 @@ export type GuestOrderStatus = (typeof GUEST_ORDER_STATUSES)[number];
 export interface IGuestOrder {
   _id: Types.ObjectId;
   reference: string;
-  /** The wallet it's paid into and bought from: the phone number's Tela account. */
+  /** The wallet it's paid into and bought from: the phone number's Tasa account. */
   user: Types.ObjectId;
   /** E.164; where the PIN or token is texted. */
   phone: string;

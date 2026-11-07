@@ -8,15 +8,15 @@ import { SERVICE_IDS, type ServiceId } from '../../../lib/schemas';
  *   coupon  made and prepaid by a user. Each person who claims it gets `unitAmount` to
  *           spend across bills until it expires; `quantity` is how many people can claim.
  *   gift    a coupon for exactly one phone number (quantity 1).
- *   promo   made by Tela staff and paid for by Tela (`expense:promotions`): percent or fixed
+ *   promo   made by Tasa staff and paid for by Tasa (`expense:promotions`): percent or fixed
  *           off, capped per use, limited by a budget and per-user uses.
  *
  * `fundedBy` says whose money a coupon/gift spends. A user's sits in ledger account
- * `coupon:<id>` until it's spent or returned at expiry. A Tela giveaway holds no money:
+ * `coupon:<id>` until it's spent or returned at expiry. A Tasa giveaway holds no money:
  * each use is booked to `expense:giveaways:<id>` as it happens, so its cost is exact.
- * Promos are always Tela's.
+ * Promos are always Tasa's.
  */
-export const FUNDERS = ['user', 'tela'] as const;
+export const FUNDERS = ['user', 'tasa'] as const;
 export type Funder = (typeof FUNDERS)[number];
 export const COUPON_KINDS = ['coupon', 'gift', 'promo'] as const;
 export type CouponKind = (typeof COUPON_KINDS)[number];
@@ -34,7 +34,7 @@ export type PromoRules = {
   minSpend: number;
   /** Discount the bill itself, or only our charges on it. */
   appliesTo: 'amount' | 'fee';
-  /** Total Tela will spend on this promo, kobo. */
+  /** Total Tasa will spend on this promo, kobo. */
   budget: number;
   /** Discount given so far, kobo. Only moves inside purchase/refund transactions. */
   spent: number;
@@ -53,7 +53,7 @@ export interface ICoupon {
   title: string;
   description?: string;
   fundedBy: Funder;
-  /** The user who paid for it. Tela giveaways and promos have none. */
+  /** The user who paid for it. Tasa giveaways and promos have none. */
   owner?: Types.ObjectId | null;
   /** The admin who created a promo. */
   createdBy?: Types.ObjectId;
@@ -71,7 +71,7 @@ export interface ICoupon {
   quantity?: number;
   claimed: number;
   /**
-   * Gift recipient. When the sender's username/phone/email matched a Tela user, the gift is
+   * Gift recipient. When the sender's username/phone/email matched a Tasa user, the gift is
    * locked to that account. Otherwise it waits for whoever signs up with the phone/email
    * the sender typed.
    */

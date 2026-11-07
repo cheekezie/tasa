@@ -14,7 +14,7 @@ export interface ITicketTier {
 
 /**
  * A ticketed event. There's no cancelling one: the organiser stops selling instead, and
- * `adminPaused` lets Tela's staff do the same. `refundDays` is fixed once created, because
+ * `adminPaused` lets Tasa's staff do the same. `refundDays` is fixed once created, because
  * buyers paid on those terms.
  */
 /** A photo or video the organiser shows off the event with, usually from past ones. In R2. */

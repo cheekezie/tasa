@@ -1,5 +1,5 @@
 /**
- * Everything Tela needs from its bill provider (VTpass). Amounts are integer kobo on this
+ * Everything Tasa needs from its bill provider (VTpass). Amounts are integer kobo on this
  * side of the interface; the adapter converts.
  */
 

@@ -84,7 +84,7 @@ async function splitDto(s: ISplit, viewerId: string, opts: { result?: boolean } 
   const users = await UserModel.find({ _id: { $in: [s.starter, ...s.shares.map((x) => x.user)] } }).select('fullName username').lean();
   const label = (id: Types.ObjectId) => {
     const u = users.find((x) => x._id.toString() === id.toString());
-    return { id: id.toString(), name: u ? publicName(u) : 'A Tela user', username: u?.username ?? null };
+    return { id: id.toString(), name: u ? publicName(u) : 'A Tasa user', username: u?.username ?? null };
   };
   const mine = s.shares.find((x) => x.user.toString() === viewerId);
   return {
@@ -124,7 +124,7 @@ export const SplitsService = {
     if (new Set(usernames).size !== usernames.length) throw unprocessable('Each person can have one share', 'DUPLICATE_SHARE');
     const people = await UserModel.find({ username: { $in: usernames }, status: 'active' }).select('_id username').lean();
     const missing = usernames.find((u) => !people.some((p) => p.username === u));
-    if (missing) throw notFound(`No Tela user has the username @${missing}`);
+    if (missing) throw notFound(`No Tasa user has the username @${missing}`);
 
     const priced = await BillsService.quote(userId, { kind: 'bill', ...input.bill, autoApply: false });
     const total = priced.amount + priced.fee;
@@ -167,7 +167,7 @@ export const SplitsService = {
     const users = await UserModel.find({ _id: { $in: last.shares.map((x) => x.user) } }).select('username status').lean();
     const shares = last.shares.map((x) => {
       const u = users.find((p) => p._id.equals(x.user));
-      if (!u?.username || u.status !== 'active') throw unprocessable('Someone in the last split isn’t on Tela any more. Start a new split instead.', 'SPLIT_PERSON_GONE');
+      if (!u?.username || u.status !== 'active') throw unprocessable('Someone in the last split isn’t on Tasa any more. Start a new split instead.', 'SPLIT_PERSON_GONE');
       return { username: u.username, amount: x.amount };
     });
     const custom = Math.max(...shares.map((x) => x.amount)) - Math.min(...shares.map((x) => x.amount)) > 1;

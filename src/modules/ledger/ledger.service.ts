@@ -20,8 +20,8 @@ import { WalletModel } from './models/wallet.model';
  *   revenue:charges:<scope>[:<service>]   our charges   (e.g. revenue:charges:bill:electricity)
  *   revenue:commission:<service>          VTpass's discount: face value minus what it debited
  *   expense:provider_fees:<source>        SaySwitch's cut on funding / beneficiary collections
- *   expense:promotions:<couponId>         Tela promo discounts
- *   expense:giveaways:<couponId>          Tela-funded coupons and gifts
+ *   expense:promotions:<couponId>         Tasa promo discounts
+ *   expense:giveaways:<couponId>          Tasa-funded coupons and gifts
  */
 export const Accounts = {
   collections: 'provider:sayswitch',

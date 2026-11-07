@@ -47,7 +47,7 @@ export const ContactSchema = z.discriminatedUnion('type', [
 ]);
 export type Contact = z.infer<typeof ContactSchema>;
 
-/** Who money or a gift is for: a Tela username, a phone number or an email. */
+/** Who money or a gift is for: a Tasa username, a phone number or an email. */
 export const RecipientSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('username'),
@@ -56,7 +56,7 @@ export const RecipientSchema = z.discriminatedUnion('type', [
       .trim()
       .toLowerCase()
       .transform((v) => v.replace(/^@/, ''))
-      .refine((v) => /^[a-z][a-z0-9_]{2,19}$/.test(v), 'Enter a valid Tela username'),
+      .refine((v) => /^[a-z][a-z0-9_]{2,19}$/.test(v), 'Enter a valid Tasa username'),
   }),
   ...ContactSchema.options,
 ]);

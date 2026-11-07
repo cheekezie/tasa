@@ -74,7 +74,7 @@ async function groupOr404(id: string) {
 }
 
 function assertOpen(group: Pick<IGroup, 'suspended'>) {
-  if (group.suspended?.at) throw forbidden('This group is suspended. Contact Tela support.');
+  if (group.suspended?.at) throw forbidden('This group is suspended. Contact Tasa support.');
 }
 
 async function asExecutive(groupId: string, userId: string, role?: 'owner') {
@@ -88,7 +88,7 @@ async function asExecutive(groupId: string, userId: string, role?: 'owner') {
 async function assertIdOnFile(userId: string | Types.ObjectId, who: 'you' | 'they') {
   const user = await UserModel.findById(userId).select('bvnLast4 ninLast4');
   if (!user?.bvnLast4 && !user?.ninLast4) {
-    throw unprocessable(who === 'you' ? 'Add your BVN or NIN to run a group' : 'They need a BVN or NIN on Tela to be an executive', 'ID_REQUIRED');
+    throw unprocessable(who === 'you' ? 'Add your BVN or NIN to run a group' : 'They need a BVN or NIN on Tasa to be an executive', 'ID_REQUIRED');
   }
 }
 
@@ -190,7 +190,9 @@ function memberDto(m: MemberLike, group: Pick<IGroup, 'dues' | 'termsVersion'>, 
 
 async function changeDto(c: IGroupPayoutChange | null, viewerId: string) {
   if (!c) return null;
-  const names = await UserModel.find({ _id: { $in: [c.proposedBy, ...c.cosigners.map((x) => x.user)] } }).select('fullName username').lean();
+  const names = await UserModel.find({ _id: { $in: [c.proposedBy, ...c.cosigners.map((x) => x.user)] } })
+    .select('fullName username')
+    .lean();
   const name = (id: Types.ObjectId) => {
     const u = names.find((n) => n._id.toString() === id.toString());
     return u?.fullName || (u?.username ? `@${u.username}` : 'An executive');
@@ -223,7 +225,7 @@ async function termsOf(group: IGroup) {
     payout: masked(group.payout),
     dues: fees.map(({ due, charge }) => ({ ...dueDto(due), charge })),
     points: [
-      `Dues are held by Tela for ${group.name} and paid out only to ${group.payout.accountName}, ${group.payout.bankName} •••• ${group.payout.accountNumber.slice(-4)}.`,
+      `Dues are held by Tasa for ${group.name} and paid out only to ${group.payout.accountName}, ${group.payout.bankName} •••• ${group.payout.accountNumber.slice(-4)}.`,
       'Recurring dues start the day you’re let in and repeat from that day. Executives can add dues later, such as a one-off levy. Dues already paid are not refunded.',
       'If the group changes where its money goes, you will be asked to accept again before paying.',
     ],
@@ -236,7 +238,9 @@ async function termsOf(group: IGroup) {
  */
 async function duesWithStats(group: IGroup) {
   const now = new Date();
-  const members = await GroupMemberModel.find({ group: group._id, status: { $ne: 'pending' } }).select('status startsAt anchorDay joinedAt paid backfills').lean();
+  const members = await GroupMemberModel.find({ group: group._id, status: { $ne: 'pending' } })
+    .select('status startsAt anchorDay joinedAt paid backfills')
+    .lean();
   const active = members.filter((m) => m.status === 'active');
   return group.dues.map((due) => {
     const column = due.kind === 'recurring' ? bucket(due.period!, now, 0) : null;
@@ -253,6 +257,19 @@ async function duesWithStats(group: IGroup) {
     const collected = members.reduce((n, m) => n + m.paid.filter((p) => p.due.equals(due._id)).length, 0) * due.amount;
     return { ...dueDto(due), stats: { current: { start: (column?.start ?? due.createdAt).toISOString(), members: applies, paid }, outstanding, collected } };
   });
+}
+
+/** What someone sees before joining: the group and its terms. */
+async function previewDto(group: IGroup) {
+  return {
+    id: group._id.toString(),
+    name: group.name,
+    logoUrl: logoUrl(group),
+    about: group.about ?? null,
+    requireApproval: group.requireApproval,
+    fields: group.fields,
+    terms: await termsOf(group),
+  };
 }
 
 export const GroupsService = {
@@ -336,7 +353,9 @@ export const GroupsService = {
     const [change, counts, execUsers] = await Promise.all([
       openChange(group._id),
       GroupMemberModel.aggregate<{ _id: string; n: number }>([{ $match: { group: group._id } }, { $group: { _id: '$status', n: { $sum: 1 } } }]),
-      UserModel.find({ _id: { $in: group.executives.map((e) => e.user) } }).select('fullName username').lean(),
+      UserModel.find({ _id: { $in: group.executives.map((e) => e.user) } })
+        .select('fullName username')
+        .lean(),
     ]);
     const count = (status: string) => counts.find((c) => c._id === status)?.n ?? 0;
     return {
@@ -367,7 +386,11 @@ export const GroupsService = {
     };
   },
 
-  async update(groupId: string, userId: string, input: { name?: string | undefined; about?: string | undefined; requireApproval?: boolean | undefined; fields?: { label: string; required: boolean }[] | undefined }) {
+  async update(
+    groupId: string,
+    userId: string,
+    input: { name?: string | undefined; about?: string | undefined; requireApproval?: boolean | undefined; fields?: { label: string; required: boolean }[] | undefined },
+  ) {
     const group = await asExecutive(groupId, userId);
     if (input.name !== undefined) group.name = input.name;
     if (input.about !== undefined) group.about = input.about || undefined;
@@ -392,7 +415,8 @@ export const GroupsService = {
   async addDue(groupId: string, userId: string, input: DueInput) {
     const group = await asExecutive(groupId, userId);
     assertOpen(group);
-    if (group.dues.filter(isOpen).length >= MAX_OPEN_DUES) throw unprocessable(`A group can collect up to ${MAX_OPEN_DUES} dues at once. End one first.`, 'TOO_MANY_DUES');
+    if (group.dues.filter(isOpen).length >= MAX_OPEN_DUES)
+      throw unprocessable(`A group can collect up to ${MAX_OPEN_DUES} dues at once. End one first.`, 'TOO_MANY_DUES');
     group.dues.push({ ...input, createdAt: new Date() } as IGroupDue);
     await group.save();
     bus.emit('group.due', { groupId, dueId: group.dues.at(-1)!._id.toString() });
@@ -427,7 +451,9 @@ export const GroupsService = {
    * name and picture. The terms, dues and payout account wait for the app, behind sign-in.
    */
   async publicPreview(code: string) {
-    const group = await GroupModel.findOne({ inviteCode: code, status: 'active', 'suspended.at': { $exists: false } }).select('name logoKey requireApproval').lean();
+    const group = await GroupModel.findOne({ inviteCode: code, status: 'active', 'suspended.at': { $exists: false } })
+      .select('name logoKey requireApproval')
+      .lean();
     if (!group) throw notFound('No group has that code. Check it with the person who invited you.');
     return { name: group.name, logoUrl: logoUrl(group), requireApproval: group.requireApproval };
   },
@@ -437,7 +463,7 @@ export const GroupsService = {
     const group = await GroupModel.findOne({ inviteCode: code, status: 'active' });
     if (!group) throw notFound('No group has that code. Check it with the person who invited you.');
     assertOpen(group);
-    return { id: group.id as string, name: group.name, logoUrl: logoUrl(group), about: group.about ?? null, requireApproval: group.requireApproval, fields: group.fields, terms: await termsOf(group) };
+    return previewDto(group);
   },
 
   async join(userId: string, input: { code: string; fields: Record<string, string>; acceptTerms: number }) {
@@ -445,9 +471,10 @@ export const GroupsService = {
     if (!group) throw notFound('No group has that code. Check it with the person who invited you.');
     assertOpen(group);
     if (input.acceptTerms !== group.termsVersion) throw conflict('These terms have changed. Read them again before joining.', 'GROUP_TERMS_CHANGED');
-    const missing = group.fields.find((f) => f.required && !input.fields[f.key]?.trim());
+    const given = input.fields;
+    const missing = group.fields.find((f) => f.required && !given[f.key]?.trim());
     if (missing) throw unprocessable(`Enter your ${missing.label.toLowerCase()}`, 'FIELD_REQUIRED');
-    const fields = Object.fromEntries(group.fields.filter((f) => input.fields[f.key]?.trim()).map((f) => [f.key, input.fields[f.key]!.trim()]));
+    const fields = Object.fromEntries(group.fields.filter((f) => given[f.key]?.trim()).map((f) => [f.key, given[f.key]!.trim()]));
 
     const now = new Date();
     const { y, m, d } = lagosParts(now);
@@ -466,7 +493,9 @@ export const GroupsService = {
     let member: GroupMemberDoc;
     try {
       // Someone removed who comes back starts again: what they owed before stays with the group's records.
-      member = existing ? (await GroupMemberModel.findByIdAndUpdate(existing._id, fresh, { new: true }))! : await GroupMemberModel.create({ group: group._id, user: userId, ...fresh });
+      member = existing
+        ? (await GroupMemberModel.findByIdAndUpdate(existing._id, fresh, { new: true }))!
+        : await GroupMemberModel.create({ group: group._id, user: userId, ...fresh });
     } catch (err) {
       if (isDuplicateKey(err)) throw conflict('You’re already in this group', 'ALREADY_MEMBER');
       throw err;
@@ -488,24 +517,36 @@ export const GroupsService = {
   },
 
   // ── Members (executives) ────────────────────────────────────────────────
-  async members(groupId: string, userId: string, q: { status?: 'pending' | 'active' | undefined; owing?: boolean | undefined; search?: string | undefined; page: number; limit: number }) {
+  async members(
+    groupId: string,
+    userId: string,
+    q: { status?: 'pending' | 'active' | undefined; owing?: boolean | undefined; search?: string | undefined; page: number; limit: number },
+  ) {
     const group = await asExecutive(groupId, userId);
     const filter: FilterQuery<IGroupMember> = { group: group._id, status: q.status ?? { $in: ['pending', 'active'] } };
     if (q.search) {
       const pattern = new RegExp(q.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }] }).select('_id').limit(500).lean();
+      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }] })
+        .select('_id')
+        .limit(500)
+        .lean();
       filter.user = { $in: users.map((u) => u._id) };
     }
     const all = await GroupMemberModel.find(filter).sort({ joinedAt: 1 }).lean();
     const now = new Date();
     // Owing depends on today's date, so it's worked out here rather than queried.
-    const rows = all.map((m) => ({ m, dto: memberDto(m, group, { now }) })).filter(({ dto }) => q.owing === undefined || (dto.periodsOwed > 0) === q.owing);
+    const rows = all.map((m) => ({ m, dto: memberDto(m, group, { now }) })).filter(({ dto }) => q.owing === undefined || dto.periodsOwed > 0 === q.owing);
     const page = rows.slice((q.page - 1) * q.limit, q.page * q.limit);
-    const users = await UserModel.find({ _id: { $in: page.map(({ m }) => m.user) } }).select('fullName username phone').lean();
+    const users = await UserModel.find({ _id: { $in: page.map(({ m }) => m.user) } })
+      .select('fullName username phone')
+      .lean();
     return paginate(
       page.map(({ m, dto }) => {
         const u = users.find((x) => x._id.toString() === m.user.toString());
-        return { ...dto, user: { id: m.user.toString(), name: u?.fullName ?? null, username: u?.username ?? null } };
+        return {
+          ...dto,
+          user: { id: m.user.toString(), name: u?.fullName ?? null, username: u?.username ?? null },
+        };
       }),
       rows.length,
       q.page,
@@ -548,7 +589,7 @@ export const GroupsService = {
     };
   },
 
-  /** Arrears from before Tela on a recurring due: earlier periods, owed like any other. */
+  /** Arrears from before Tasa on a recurring due: earlier periods, owed like any other. */
   async backfill(groupId: string, userId: string, memberId: string, input: { dueId: string; periods: number; note?: string | undefined }) {
     const group = await asExecutive(groupId, userId);
     const due = dueOf(group, input.dueId);
@@ -575,11 +616,16 @@ export const GroupsService = {
     const filter: FilterQuery<IGroupMember> = { group: group._id, status: 'active' };
     if (q.search) {
       const pattern = new RegExp(q.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }] }).select('_id').limit(500).lean();
+      const users = await UserModel.find({ $or: [{ fullName: pattern }, { username: pattern }] })
+        .select('_id')
+        .limit(500)
+        .lean();
       filter.user = { $in: users.map((u) => u._id) };
     }
     const all = await GroupMemberModel.find(filter).lean();
-    const users = await UserModel.find({ _id: { $in: all.map((m) => m.user) } }).select('fullName username').lean();
+    const users = await UserModel.find({ _id: { $in: all.map((m) => m.user) } })
+      .select('fullName username')
+      .lean();
     const nameOf = (uid: Types.ObjectId) => {
       const u = users.find((x) => x._id.toString() === uid.toString());
       return { id: uid.toString(), name: u?.fullName ?? null, username: u?.username ?? null };
@@ -602,9 +648,7 @@ export const GroupsService = {
     const rows = statements
       .map(({ m, periods }) => {
         const cells =
-          due.kind === 'one_off'
-            ? [periods[0]?.status ?? null]
-            : columns.map((c) => periodIn(m, due, c as { start: Date; end: Date }, periods)?.status ?? null);
+          due.kind === 'one_off' ? [periods[0]?.status ?? null] : columns.map((c) => periodIn(m, due, c as { start: Date; end: Date }, periods)?.status ?? null);
         const owed = periods.filter((p) => p.status === 'due' || p.status === 'overdue').length * due.amount;
         return { member: m, user: nameOf(m.user), cells, owed, paid: periods.filter((p) => p.status === 'paid').length };
       })
@@ -643,17 +687,20 @@ export const GroupsService = {
   async addExecutive(groupId: string, userId: string, username: string) {
     const group = await asExecutive(groupId, userId, 'owner');
     const user = await UserModel.findOne({ username, status: 'active' }).select('_id');
-    if (!user) throw notFound('No Tela user has that username');
+    if (!user) throw notFound('No Tasa user has that username');
     if (roleOf(group, user.id as string)) throw conflict('They’re already an executive', 'ALREADY_EXECUTIVE');
     if (group.executives.length >= MAX_EXECUTIVES) throw unprocessable(`A group can have up to ${MAX_EXECUTIVES} executives`, 'TOO_MANY_EXECUTIVES');
     await assertIdOnFile(user._id, 'they');
-    await GroupModel.updateOne({ _id: group._id, 'executives.user': { $ne: user._id } }, { $push: { executives: { user: user._id, role: 'executive', addedAt: new Date() } } });
+    await GroupModel.updateOne(
+      { _id: group._id, 'executives.user': { $ne: user._id } },
+      { $push: { executives: { user: user._id, role: 'executive', addedAt: new Date() } } },
+    );
     return this.detail(groupId, userId);
   },
 
   async removeExecutive(groupId: string, userId: string, executiveId: string) {
     const group = await asExecutive(groupId, userId, 'owner');
-    if (executiveId === userId) throw unprocessable('The owner can’t step down here. Contact Tela support to hand over a group.', 'OWNER_STAYS');
+    if (executiveId === userId) throw unprocessable('The owner can’t step down here. Contact Tasa support to hand over a group.', 'OWNER_STAYS');
     // A co-signer can't be removed mid-change: that would let the owner drop whoever objects.
     if ((await openChange(group._id))?.cosigners.some((c) => c.user.toString() === executiveId)) {
       throw conflict('They’re approving a payout account change. Wait for it to finish.', 'PAYOUT_CHANGE_OPEN');
@@ -677,7 +724,8 @@ export const GroupsService = {
       if (!due) throw notFound('Due not found');
       const payable = duePeriods(member, due, now).filter((p) => p.status !== 'paid');
       const periods = [...new Set(item.periods)].sort((a, b) => a - b);
-      if (periods.some((k) => !payable.some((p) => p.index === k))) throw conflict(`Some of those ${due.name} periods are paid or can’t be paid. Check them again.`, 'DUES_CHANGED');
+      if (periods.some((k) => !payable.some((p) => p.index === k)))
+        throw conflict(`Some of those ${due.name} periods are paid or can’t be paid. Check them again.`, 'DUES_CHANGED');
       return { due: due._id, name: due.name, amount: due.amount, periods };
     });
     if (new Set(chosen.map((c) => c.due.toString())).size !== chosen.length) throw unprocessable('List each due once', 'DUPLICATE_DUE');
@@ -781,7 +829,9 @@ export const GroupsService = {
     const { charges, fee } = await ChargesService.compute({ scope: 'group_payout' }, amount);
     const balance = await balanceOf(group._id);
     if (amount + fee > balance) {
-      throw new AppError(422, `The group can withdraw up to ${formatNaira(Math.max(0, balance - fee))}`, 'GROUP_FUNDS_LOW', { available: String(Math.max(0, balance - fee)) });
+      throw new AppError(422, `The group can withdraw up to ${formatNaira(Math.max(0, balance - fee))}`, 'GROUP_FUNDS_LOW', {
+        available: String(Math.max(0, balance - fee)),
+      });
     }
     const quote = await QuotesService.create(userId, { kind: 'group_payout', amount, charges, fee, groupPayout: { group: group._id, ...group.payout } });
     return { ...toQuoteDto(quote), groupPayout: { group: group.name, ...masked(group.payout) } };
@@ -796,7 +846,11 @@ export const GroupsService = {
       const quote = await QuotesService.consume(quoteId, userId, 'group_payout', session);
       const q = quote.groupPayout!;
       // Bumped first, so a second withdrawal racing this one waits for it.
-      const group = await GroupModel.findOneAndUpdate({ _id: q.group, status: 'active', 'executives.user': userId }, { $inc: { withdrawals: 1 } }, { session, new: true });
+      const group = await GroupModel.findOneAndUpdate(
+        { _id: q.group, status: 'active', 'executives.user': userId },
+        { $inc: { withdrawals: 1 } },
+        { session, new: true },
+      );
       if (!group) throw forbidden('Only executives can withdraw');
       assertOpen(group);
       if (await openChange(group._id, session)) throw conflict('Withdrawals wait while the payout account is being changed', 'PAYOUT_CHANGE_OPEN');
@@ -854,7 +908,9 @@ export const GroupsService = {
     const isMember = await GroupMemberModel.exists({ group: group._id, user: userId, status: 'active' });
     if (!roleOf(group, userId) && !isMember) throw notFound('Group not found');
     const rows = await TransactionModel.find({ kind: 'group_payout', 'group.id': group._id }).sort({ createdAt: -1 }).limit(100).lean();
-    const people = await UserModel.find({ _id: { $in: rows.map((r) => r.user) } }).select('fullName username').lean();
+    const people = await UserModel.find({ _id: { $in: rows.map((r) => r.user) } })
+      .select('fullName username')
+      .lean();
     return rows.map((r) => {
       const u = people.find((p) => p._id.toString() === r.user.toString());
       return {
@@ -901,7 +957,11 @@ export const GroupsService = {
       if (isDuplicateKey(err)) throw conflict('A payout account change is already waiting', 'PAYOUT_CHANGE_OPEN');
       throw err;
     }
-    await getQueue(GROUPS_QUEUE).add('payout-change.expire', { changeId: change.id }, { delay: PAYOUT_CHANGE_APPROVAL_MS, jobId: `payout-change-expire-${change.id}`, attempts: 1 });
+    await getQueue(GROUPS_QUEUE).add(
+      'payout-change.expire',
+      { changeId: change.id },
+      { delay: PAYOUT_CHANGE_APPROVAL_MS, jobId: `payout-change-expire-${change.id}`, attempts: 1 },
+    );
     bus.emit('group.payoutChange', { changeId: change.id as string, stage: 'proposed' });
     return this.detail(groupId, userId);
   },
@@ -918,9 +978,17 @@ export const GroupsService = {
     if (!approved) throw conflict('There’s nothing waiting for your approval', 'NOTHING_TO_APPROVE');
     if (approved.cosigners.every((c) => c.approvedAt)) {
       const effectiveAt = new Date(Date.now() + PAYOUT_CHANGE_COOLING_OFF_MS);
-      const cooling = await GroupPayoutChangeModel.findOneAndUpdate({ _id: approved._id, status: 'awaiting_approval' }, { status: 'cooling_off', effectiveAt }, { new: true });
+      const cooling = await GroupPayoutChangeModel.findOneAndUpdate(
+        { _id: approved._id, status: 'awaiting_approval' },
+        { status: 'cooling_off', effectiveAt },
+        { new: true },
+      );
       if (cooling) {
-        await getQueue(GROUPS_QUEUE).add('payout-change.apply', { changeId: cooling.id }, { delay: PAYOUT_CHANGE_COOLING_OFF_MS, jobId: `payout-change-apply-${cooling.id}`, attempts: 1 });
+        await getQueue(GROUPS_QUEUE).add(
+          'payout-change.apply',
+          { changeId: cooling.id },
+          { delay: PAYOUT_CHANGE_COOLING_OFF_MS, jobId: `payout-change-apply-${cooling.id}`, attempts: 1 },
+        );
         bus.emit('group.payoutChange', { changeId: cooling.id as string, stage: 'cooling_off' });
       }
     }
@@ -952,7 +1020,7 @@ export const GroupsService = {
 
   /** Cooling-off passed with no objection: the new account is the group's, and members accept it before paying again. */
   async applyPayoutChange(changeId: string) {
-    // A suspended group's account doesn't move; the sweep applies it once Tela lifts the suspension.
+    // A suspended group's account doesn't move; the sweep applies it once Tasa lifts the suspension.
     const pending = await GroupPayoutChangeModel.findById(changeId).select('group').lean();
     if (pending && (await GroupModel.exists({ _id: pending.group, 'suspended.at': { $exists: true } }))) return;
     const applied = await inTransaction(async (session) => {
@@ -977,8 +1045,12 @@ export const GroupsService = {
   async sweepPayoutChanges() {
     const now = new Date();
     const [lapsing, due] = await Promise.all([
-      GroupPayoutChangeModel.find({ status: 'awaiting_approval', expiresAt: { $lte: now } }).select('_id').limit(100),
-      GroupPayoutChangeModel.find({ status: 'cooling_off', effectiveAt: { $lte: now } }).select('_id').limit(100),
+      GroupPayoutChangeModel.find({ status: 'awaiting_approval', expiresAt: { $lte: now } })
+        .select('_id')
+        .limit(100),
+      GroupPayoutChangeModel.find({ status: 'cooling_off', effectiveAt: { $lte: now } })
+        .select('_id')
+        .limit(100),
     ]);
     for (const c of lapsing) await this.expirePayoutChange(c.id as string).catch((err) => console.error(`[groups] expire ${c.id}`, err));
     for (const c of due) await this.applyPayoutChange(c.id as string).catch((err) => console.error(`[groups] apply ${c.id}`, err));

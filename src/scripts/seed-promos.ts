@@ -13,7 +13,7 @@ const expiresAt = new Date(Date.now() + 90 * 86_400_000).toISOString();
 const PROMOS = [
   {
     code: 'WELCOME50',
-    title: 'Welcome to Tela',
+    title: 'Welcome to Tasa',
     description: 'Half off your first bill.',
     valueType: 'percent',
     value: 50,

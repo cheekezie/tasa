@@ -1,6 +1,6 @@
-# Tela API — working conventions
+# Tasa API — working conventions
 
-Backend for the Tela app (`../tela`, Expo). Read `docs/architecture.md` before changing money logic.
+Backend for the Tasa app (`../tela`, Expo). Read `docs/architecture.md` before changing money logic.
 
 ## Layout
 
@@ -36,6 +36,9 @@ Backend for the Tela app (`../tela`, Expo). Read `docs/architecture.md` before c
 - A website (guest) order is a funding of its phone number's wallet plus a bill from it, bought only if that order's own transfer covers it.
   Whatever isn't spent stays in that wallet (claimed by signing up with the number); nothing goes back to a bank.
 - A split bill is paid only from its pot (`split:<id>`, the transaction's `fundedFrom`); a split that won't be paid refunds every paid share.
+- Student ID cards are stored encrypted (`encryptBytes`) and opened only through compliance routes that log the view first.
+  A verified student's matric number is one account per school (unique index); changing school, department or matric undoes verification.
+  Groups don't depend on student profiles: a class is an ordinary group its rep invites people to.
 - Cross-module side effects (notifications) go through `bus.emit` + a listener; slow work goes to BullMQ.
 - No simulators: tests fake SaySwitch and VTpass at `fetch`; manual testing uses their sandboxes.
 - Never return `pinHash`, `bvnCipher`, `ninCipher` or refresh tokens. BVN leaves the server as `last4` only, with one

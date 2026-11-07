@@ -97,11 +97,11 @@ export interface ITransaction {
     lastCheckedAt?: Date;
   };
   counterparty?: { user?: Types.ObjectId; username?: string; name?: string; phone?: string };
-  coupon?: { id: Types.ObjectId; code: string; kind: 'coupon' | 'gift' | 'promo'; fundedBy?: 'user' | 'tela' };
+  coupon?: { id: Types.ObjectId; code: string; kind: 'coupon' | 'gift' | 'promo'; fundedBy?: 'user' | 'tasa' };
   beneficiary?: Types.ObjectId;
   /** A bill bought as a gift. The recipient sees it in their gift inbox once delivered. */
   giftTo?: {
-    /** Set when the recipient is a Tela user (found by username/phone/email). */
+    /** Set when the recipient is a Tasa user (found by username/phone/email). */
     user?: Types.ObjectId;
     phone?: string;
     email?: string;
@@ -191,7 +191,7 @@ const transactionSchema = new Schema<ITransaction>(
       name: String,
       phone: String,
     },
-    coupon: { id: { type: Schema.Types.ObjectId, ref: 'Coupon' }, code: String, kind: { type: String, enum: ['coupon', 'gift', 'promo'] }, fundedBy: { type: String, enum: ['user', 'tela'] } },
+    coupon: { id: { type: Schema.Types.ObjectId, ref: 'Coupon' }, code: String, kind: { type: String, enum: ['coupon', 'gift', 'promo'] }, fundedBy: { type: String, enum: ['user', 'tasa'] } },
     beneficiary: { type: Schema.Types.ObjectId, ref: 'Beneficiary' },
     giftTo: {
       user: { type: Schema.Types.ObjectId, ref: 'User' },

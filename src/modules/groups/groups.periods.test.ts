@@ -70,14 +70,26 @@ describe('dues statements', () => {
 
   it('never owes an optional due, and drops what was not paid once it ends', () => {
     const welfare = { ...monthly, compulsory: false };
-    expect(duePeriods(member(), welfare, now).slice(0, 3).map((p) => p.status)).toEqual(['optional', 'optional', 'optional']);
+    expect(
+      duePeriods(member(), welfare, now)
+        .slice(0, 3)
+        .map((p) => p.status),
+    ).toEqual(['optional', 'optional', 'optional']);
     expect(summarise(member(), [welfare], now).amount).toBe(0);
     const ended = { ...welfare, endedAt: day(2026, 10, 10) };
     expect(duePeriods(member({ paid: [{ due: id(1), period: 0 }] }), ended, now).map((p) => p.index)).toEqual([0]);
   });
 
   it('owes a one-off once, only if they were a member when it was created', () => {
-    const levy = { _id: id(2), name: 'Condolence', kind: 'one_off', amount: 200_000, compulsory: true, createdAt: day(2026, 11, 1), dueAt: day(2026, 11, 15) } as IGroupDue;
+    const levy = {
+      _id: id(2),
+      name: 'Condolence',
+      kind: 'one_off',
+      amount: 200_000,
+      compulsory: true,
+      createdAt: day(2026, 11, 1),
+      dueAt: day(2026, 11, 15),
+    } as IGroupDue;
     expect(duePeriods(member(), levy, now)).toEqual([{ index: 0, start: levy.createdAt, end: levy.dueAt, status: 'overdue' }]);
     expect(duePeriods(member(), levy, day(2026, 11, 10))[0]!.status).toBe('due');
     expect(duePeriods(member({ joinedAt: day(2026, 11, 2) }), levy, now)).toEqual([]);

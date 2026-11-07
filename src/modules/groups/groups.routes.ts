@@ -9,6 +9,7 @@ import { requireFeature } from '../config/config.routes';
 import {
   AdminGroupsQuerySchema,
   GroupSuspensionSchema,
+  ReceiptCodeParamsSchema,
   AcceptTermsSchema,
   AddExecutiveSchema,
   DueParamsSchema,
@@ -29,6 +30,7 @@ import {
   UpdateDueSchema,
 } from './groups.schema';
 import { GroupsAdminService } from './groups.admin';
+import { ReceiptsService } from './groups.receipts';
 import { dueReportWorkbook } from './groups.export';
 import { GroupsService } from './groups.service';
 
@@ -75,6 +77,12 @@ export async function groupsRoutes(app: FastifyInstance) {
       throw unprocessable('Use an image under 5MB', 'PHOTO_TOO_LARGE');
     });
     return send(reply, await GroupsService.setLogo(id, req.user.sub, buffer));
+  });
+
+  // Their own dues payments, each with the link its QR code opens.
+  app.get('/:id/receipts', async (req, reply) => {
+    const { id } = parse(IdParamsSchema, req.params);
+    return send(reply, await ReceiptsService.mine(id, req.user.sub));
   });
 
   app.post('/:id/terms', async (req, reply) => {
@@ -199,6 +207,18 @@ export async function publicGroupsRoutes(app: FastifyInstance) {
     const { code } = parse(JoinCodeParamsSchema, req.params);
     reply.header('Cache-Control', 'public, max-age=60');
     return send(reply, await GroupsService.publicPreview(code));
+  });
+}
+
+/**
+ * `/api/public/receipts` — no sign-in: the website's receipt page (`/r/:code`), which a dues
+ * receipt's QR code opens. Codes are signed, and throttled like invite codes.
+ */
+export async function publicReceiptsRoutes(app: FastifyInstance) {
+  app.get('/:code', { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const { code } = parse(ReceiptCodeParamsSchema, req.params);
+    reply.header('Cache-Control', 'no-store');
+    return send(reply, await ReceiptsService.verify(code));
   });
 }
 

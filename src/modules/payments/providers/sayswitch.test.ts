@@ -7,7 +7,7 @@ const gw = createSaySwitchGateway(cfg);
 const sign = (key: string, v: string) => createHmac('sha512', key).update(v).digest('hex');
 
 describe('SaySwitch webhooks', () => {
-  const body = JSON.stringify({ notify: 'transaction', notifyType: 'successful', data: { reference: 'TLF1', amount: '2280.00' } });
+  const body = JSON.stringify({ notify: 'transaction', notifyType: 'successful', data: { reference: 'TSF1', amount: '2280.00' } });
   const good = { payloadsignature: sign(cfg.secretKey, body), merchantsignature: sign(cfg.secretKey, cfg.publicKey) };
 
   it('accepts a correctly signed body', () => {
@@ -37,12 +37,12 @@ describe('SaySwitch webhooks', () => {
   });
 
   it("reads a payout's fee, which SaySwitch calls `fee` (collections say `fees`)", () => {
-    const payout = JSON.stringify({ notify: 'payout', notifyType: 'successful', data: { reference: 'TLO123', amount: '100', fee: '15' } });
-    expect(gw.parseWebhook(payout)).toEqual({ kind: 'payout', outcome: 'successful', reference: 'TLO123', fee: 1_500 });
+    const payout = JSON.stringify({ notify: 'payout', notifyType: 'successful', data: { reference: 'TSO123', amount: '100', fee: '15' } });
+    expect(gw.parseWebhook(payout)).toEqual({ kind: 'payout', outcome: 'successful', reference: 'TSO123', fee: 1_500 });
   });
 
   it('extracts the reference, outcome and any receiving account', () => {
-    expect(gw.parseWebhook(body)).toEqual({ kind: 'transaction', outcome: 'successful', reference: 'TLF1' });
+    expect(gw.parseWebhook(body)).toEqual({ kind: 'transaction', outcome: 'successful', reference: 'TSF1' });
     const dedicated = JSON.stringify({
       notify: 'transaction',
       notifyType: 'successful',
@@ -67,18 +67,18 @@ describe('SaySwitch calls', () => {
   it('sends naira and reads kobo back', async () => {
     const fn = stubFetch({ status: true, data: { account_name: 'SAYSWITCH', account_number: '8787652431', bank_name: 'Wema Bank' } });
     await gw.collectByTransfer({
-      reference: 'TLF1',
+      reference: 'TSF1',
       amount: 1_005_000,
       customer: { firstName: 'Ada', lastName: 'Obi', email: 'ada@example.com', phone: '08030000000' },
     });
     expect(sent(fn).amount).toBe('10050');
 
-    stubFetch({ success: true, data: { status: 'success', amount: '10050.00', fees: '50.25', reference: 'TLF1' } });
-    expect(await gw.verify('TLF1')).toMatchObject({ status: 'success', amountPaid: 1_005_000, providerFee: 5_025 });
+    stubFetch({ success: true, data: { status: 'success', amount: '10050.00', fees: '50.25', reference: 'TSF1' } });
+    expect(await gw.verify('TSF1')).toMatchObject({ status: 'success', amountPaid: 1_005_000, providerFee: 5_025 });
   });
 
   it('treats an unknown reference as still pending', async () => {
     stubFetch({ success: false, message: 'Transaction not found' }, 404);
-    expect(await gw.verify('TLF404')).toEqual({ status: 'pending', amountPaid: 0 });
+    expect(await gw.verify('TSF404')).toEqual({ status: 'pending', amountPaid: 0 });
   });
 });

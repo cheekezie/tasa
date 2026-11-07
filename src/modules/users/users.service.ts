@@ -81,7 +81,7 @@ export async function staffUserLabels(ids: (string | Types.ObjectId | null | und
   return new Map(
     users.map((u) => [
       u._id.toString(),
-      { name: u.fullName || (u.username ? `@${u.username}` : (u.phone ?? u.email ?? 'Tela user')), username: u.username ?? null },
+      { name: u.fullName || (u.username ? `@${u.username}` : (u.phone ?? u.email ?? 'Tasa user')), username: u.username ?? null },
     ]),
   );
 }
@@ -91,7 +91,7 @@ export function publicName(u: Pick<IUser, 'fullName' | 'username'>) {
     const [first, ...rest] = u.fullName.trim().split(/\s+/);
     return rest.length ? `${first} ${rest.map((r) => `${r[0]!.toUpperCase()}.`).join(' ')}` : first!;
   }
-  return u.username ? `@${u.username}` : 'Tela user';
+  return u.username ? `@${u.username}` : 'Tasa user';
 }
 
 export const toPublicUser = (u: IUser) => ({ username: u.username ?? null, name: publicName(u) });
@@ -133,14 +133,14 @@ export const UsersService = {
     }
   },
 
-  /** The active Tela user a username / phone / email belongs to, if any. */
+  /** The active Tasa user a username / phone / email belongs to, if any. */
   async resolve(r: Recipient) {
     const filter = r.type === 'username' ? { username: r.value } : { [r.type]: r.value };
     return UserModel.findOne({ ...filter, status: 'active' });
   },
 
   /**
-   * "Is this person on Tela?" before a transfer or gift. Not found isn't an error: for a
+   * "Is this person on Tasa?" before a transfer or gift. Not found isn't an error: for a
    * phone or email the app can still send a gift, which arrives as an invite.
    */
   async lookup(viewerId: string, r: Recipient) {
@@ -162,7 +162,7 @@ export const UsersService = {
     try {
       await UserModel.updateOne({ _id: userId }, { [field(contact)]: contact.value });
     } catch (err) {
-      if (isDuplicateKey(err)) throw conflict(`That ${contact.type} belongs to another Tela account`, 'CONTACT_TAKEN');
+      if (isDuplicateKey(err)) throw conflict(`That ${contact.type} belongs to another Tasa account`, 'CONTACT_TAKEN');
       throw err;
     }
     return this.me(userId);
@@ -171,7 +171,7 @@ export const UsersService = {
   async assertContactFree(userId: string, contact: Contact) {
     const owner = await UserModel.findOne({ [field(contact)]: contact.value }).select('_id');
     if (owner && owner._id.toString() !== userId) {
-      throw conflict(`That ${contact.type} belongs to another Tela account`, 'CONTACT_TAKEN');
+      throw conflict(`That ${contact.type} belongs to another Tasa account`, 'CONTACT_TAKEN');
     }
   },
 

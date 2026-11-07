@@ -63,7 +63,7 @@ export const GiftInboxService = {
           type: 'balance' as const,
           id: g.id as string,
           code: g.code,
-          from: g.fundedBy === 'tela' ? 'Tela' : (names.get(g.owner?.toString() ?? '') ?? 'A friend'),
+          from: g.fundedBy === 'tasa' ? 'Tasa' : (names.get(g.owner?.toString() ?? '') ?? 'A friend'),
           message: g.message ?? null,
           amount: g.unitAmount!,
           /** Applied automatically at checkout; no code needed. */
@@ -143,8 +143,8 @@ export const GiftInboxService = {
         id: g.id as string,
         type: 'balance' as const,
         person: received
-          ? g.fundedBy === 'tela'
-            ? 'Tela'
+          ? g.fundedBy === 'tasa'
+            ? 'Tasa'
             : (names.get(g.owner?.toString() ?? '') ?? 'A friend')
           : (g.recipientName ?? g.recipientLabel ?? 'A friend'),
         message: g.message ?? null,

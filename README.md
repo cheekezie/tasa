@@ -1,7 +1,7 @@
-# Tela API
+# Tasa API
 
-Backend for [Tela](../tela) and its back office, [tela-admin](../tela-admin): wallet, SaySwitch bank-transfer funding, VTpass bill
-payments (electricity, airtime, data, TV, Smile/Spectranet, JAMB/WAEC PINs), Tela transfers, coupons, gifts, beneficiary account numbers
+Backend for [Tasa](../tela) and its back office, [tela-admin](../tela-admin): wallet, SaySwitch bank-transfer funding, VTpass bill
+payments (electricity, airtime, data, TV, Smile/Spectranet, JAMB/WAEC PINs), Tasa transfers, coupons, gifts, beneficiary account numbers
 with auto-pay, recurring bills, event tickets with organiser payouts, feature switches and maintenance mode, insights and notifications.
 
 Fastify 5 · Mongoose 8 (replica set) · Zod 4 · BullMQ + Redis · SaySwitch · VTpass · Termii · Expo push.
@@ -45,7 +45,7 @@ SaySwitch and VTpass only at `fetch`, and checks that the ledger balances after 
 
 ## Charges
 
-Business rule: funding is free to users (Tela absorbs SaySwitch's fee, booked to
+Business rule: funding is free to users (Tasa absorbs SaySwitch's fee, booked to
 `expense:provider_fees:*`) and every transaction carries a charge. Seeded placeholders: bills ₦20 by default,
 electricity ₦100, TV/internet/water ₦50, exams ₦150; transfers ₦10; gifts ₦20; coupons 1% (₦50–₦1,000). Change them at `/api/admin/charges` (role `finance`); preview with
 `GET /api/admin/charges/preview?scope=bill&serviceId=electricity&provider=IKEDC&amount=1000000`.

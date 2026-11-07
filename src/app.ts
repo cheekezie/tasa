@@ -13,7 +13,8 @@ import { billsRoutes } from './modules/bills/bills.routes';
 import { adminCouponsRoutes, adminPromotionsRoutes, couponsRoutes, giftsRoutes, promotionsRoutes } from './modules/coupons/coupons.routes';
 import { reportsRoutes } from './modules/reports/reports.routes';
 import { adminEventsRoutes, adminSellersRoutes, eventsRoutes, organisersRoutes, sellerRoutes, ticketsRoutes } from './modules/tickets/tickets.routes';
-import { adminGroupsRoutes, groupsRoutes, publicGroupsRoutes } from './modules/groups/groups.routes';
+import { adminGroupsRoutes, groupsRoutes, publicGroupsRoutes, publicReceiptsRoutes } from './modules/groups/groups.routes';
+import { adminSchoolsRoutes, adminStudentsRoutes, studentsRoutes } from './modules/students/students.routes';
 import { guestRoutes } from './modules/guest/guest.routes';
 import { splitsRoutes } from './modules/splits/splits.routes';
 import { adminConfigRoutes, configRoutes, maintenanceGate } from './modules/config/config.routes';
@@ -88,7 +89,7 @@ export async function buildApp() {
   // Who calls what:
   //   /api/webhooks/*  — SaySwitch (signed, raw body)
   //   /api/admin/*     — back office
-  //   everything else  — the Tela app
+  //   everything else  — the Tasa app
   await app.register(configRoutes, { prefix: '/api/config' });
   await app.register(authRoutes, { prefix: '/api/auth' });
   await app.register(usersRoutes, { prefix: '/api/me' });
@@ -113,6 +114,8 @@ export async function buildApp() {
   await app.register(groupsRoutes, { prefix: '/api/groups' });
   await app.register(splitsRoutes, { prefix: '/api/splits' });
   await app.register(publicGroupsRoutes, { prefix: '/api/public/groups' });
+  await app.register(publicReceiptsRoutes, { prefix: '/api/public/receipts' });
+  await app.register(studentsRoutes, { prefix: '/api/students' });
   await app.register(guestRoutes, { prefix: '/api/guest' });
   await app.register(webhooksRoutes, { prefix: '/api/webhooks' });
   await app.register(adminsRoutes, { prefix: '/api/admin' });
@@ -122,6 +125,8 @@ export async function buildApp() {
   await app.register(adminEventsRoutes, { prefix: '/api/admin/events' });
   await app.register(adminSellersRoutes, { prefix: '/api/admin/sellers' });
   await app.register(adminGroupsRoutes, { prefix: '/api/admin/groups' });
+  await app.register(adminStudentsRoutes, { prefix: '/api/admin/students' });
+  await app.register(adminSchoolsRoutes, { prefix: '/api/admin/schools' });
   await app.register(adminConfigRoutes, { prefix: '/api/admin/config' });
 
   return app;

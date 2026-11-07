@@ -15,7 +15,7 @@ import type { TransferQuoteInput } from './transfers.schema';
 export const TransfersService = {
   async quote(userId: string, input: TransferQuoteInput) {
     const recipient = await UsersService.resolve(input.recipient);
-    if (!recipient) throw notFound("We couldn't find a Tela user with those details");
+    if (!recipient) throw notFound("We couldn't find a Tasa user with those details");
     if (recipient.id === userId) throw unprocessable("You can't send money to yourself", 'SELF_TRANSFER');
     const { charges, fee } = await ChargesService.compute({ scope: 'transfer' }, input.amount);
     const quote = await QuotesService.create(userId, {

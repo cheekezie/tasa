@@ -40,7 +40,7 @@ export type GiftQuoteInput = z.infer<typeof GiftQuoteSchema>;
 
 export const ConfirmQuoteSchema = z.object({ quoteId: ObjectIdSchema, pin: PinSchema });
 
-// ── Tela promotions (admin) ─────────────────────────────────────────────
+// ── Tasa promotions (admin) ─────────────────────────────────────────────
 
 const PromoScope = {
   services: z.union([z.literal('all'), z.array(ServiceIdSchema).min(1)]),
@@ -100,9 +100,9 @@ export const UpdatePromoSchema = z
   .partial();
 export type UpdatePromoInput = z.infer<typeof UpdatePromoSchema>;
 
-// ── Tela giveaways and gifts (admin) ────────────────────────────────────
+// ── Tasa giveaways and gifts (admin) ────────────────────────────────────
 
-export const TelaCouponSchema = z
+export const TasaCouponSchema = z
   .object({
     kind: z.enum(['coupon', 'gift']),
     /** Optional; generated when omitted. */
@@ -121,11 +121,11 @@ export const TelaCouponSchema = z
     expiresAt: z.coerce.date().refine((d) => d.getTime() > Date.now(), 'expiresAt must be in the future'),
   })
   .refine((c) => c.kind !== 'gift' || c.recipient, { path: ['recipient'], message: 'A gift needs a recipient' });
-export type TelaCouponInput = z.infer<typeof TelaCouponSchema>;
+export type TasaCouponInput = z.infer<typeof TasaCouponSchema>;
 
 export const AdminCouponListSchema = PaginationQuerySchema.extend({
   kind: z.enum(['coupon', 'gift']).optional(),
-  fundedBy: z.enum(['user', 'tela']).optional(),
+  fundedBy: z.enum(['user', 'tasa']).optional(),
   status: z.enum(['active', 'paused', 'expired', 'cancelled']).optional(),
   owner: ObjectIdSchema.optional(),
   code: z.string().trim().optional(),

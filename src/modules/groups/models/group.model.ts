@@ -34,7 +34,7 @@ export type PayoutAccount = { bankCode: string; bankName: string; accountNumber:
 
 /**
  * A group people pay dues to: a school association, a club, a set. Members join with its invite
- * code and accept its terms, which name the account the money is paid out to. Tela holds the
+ * code and accept its terms, which name the account the money is paid out to. Tasa holds the
  * dues (`group:<id>`) until executives withdraw them, only to that account.
  */
 export interface IGroup {
@@ -58,9 +58,9 @@ export interface IGroup {
   /** Bumped by every withdrawal first, so two can't spend the same balance. */
   withdrawals: number;
   status: 'active' | 'closed';
-  /** Tela stopped it: no joining, paying or withdrawing until lifted. Set when `at` is. */
+  /** Tasa stopped it: no joining, paying or withdrawing until lifted. Set when `at` is. */
   suspended?: { at: Date; reason?: string; by?: Types.ObjectId };
-  /** Every suspension and lift by Tela staff, oldest first. */
+  /** Every suspension and lift by Tasa staff, oldest first. */
   suspensionHistory: { action: 'suspended' | 'lifted'; reason?: string; by: Types.ObjectId; at: Date }[];
   createdAt: Date;
 }
@@ -120,7 +120,7 @@ export type GroupDoc = HydratedDocument<IGroup>;
 /**
  * One person in one group. Their periods start the day they were let in (`startsAt`) and repeat
  * on each recurring due's period. Period `k` of a due is paid when `paid` has it; negative `k` are
- * arrears from before Tela, added by executives as backfills.
+ * arrears from before Tasa, added by executives as backfills.
  */
 export interface IGroupMember {
   _id: Types.ObjectId;
@@ -149,7 +149,15 @@ const memberSchema = new Schema<IGroupMember>({
   fields: { type: Map, of: String, default: {} },
   startsAt: { type: Date, required: true },
   anchorDay: { type: Number, required: true },
-  paid: [{ _id: false, due: { type: Schema.Types.ObjectId, required: true }, period: { type: Number, required: true }, at: Date, transaction: { type: Schema.Types.ObjectId, ref: 'Transaction' } }],
+  paid: [
+    {
+      _id: false,
+      due: { type: Schema.Types.ObjectId, required: true },
+      period: { type: Number, required: true },
+      at: Date,
+      transaction: { type: Schema.Types.ObjectId, ref: 'Transaction' },
+    },
+  ],
   backfills: [{ _id: false, due: Schema.Types.ObjectId, periods: Number, by: { type: Schema.Types.ObjectId, ref: 'User' }, at: Date, note: String }],
   accepted: { version: Number, at: Date, payout: { type: payoutFields, _id: false } },
   joinedAt: { type: Date, required: true },
@@ -200,10 +208,7 @@ const payoutChangeSchema = new Schema<IGroupPayoutChange>(
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 // One open proposal per group: a second waits for the first to settle.
-payoutChangeSchema.index(
-  { group: 1 },
-  { unique: true, partialFilterExpression: { status: { $in: ['awaiting_approval', 'cooling_off'] } } },
-);
+payoutChangeSchema.index({ group: 1 }, { unique: true, partialFilterExpression: { status: { $in: ['awaiting_approval', 'cooling_off'] } } });
 
 export const GroupPayoutChangeModel = model<IGroupPayoutChange>('GroupPayoutChange', payoutChangeSchema);
 export type GroupPayoutChangeDoc = HydratedDocument<IGroupPayoutChange>;

@@ -17,7 +17,7 @@ export const FEATURES = {
   bill_tv: 'Cable TV',
   bill_internet: 'Internet',
   bill_jamb: 'Exams',
-  transfers: 'Tela transfers',
+  transfers: 'Tasa transfers',
   gifts: 'Gifts',
   coupons: 'Creating giveaways',
   recurring: 'Recurring bills',
@@ -36,7 +36,7 @@ export const FEATURE_KEYS = Object.keys(FEATURES) as [FeatureKey, ...FeatureKey[
 /** The switch for one bill service. Water has none: it isn't sold yet. */
 export const billFeature = (serviceId: string) => (`bill_${serviceId}` in FEATURES ? (`bill_${serviceId}` as FeatureKey) : 'bills');
 
-const DEFAULT_MAINTENANCE_MESSAGE = "We're making Tela better. We'll be back shortly.";
+const DEFAULT_MAINTENANCE_MESSAGE = "We're making Tasa better. We'll be back shortly.";
 
 // Read on most requests. Admin edits clear it here; other instances catch up within CACHE_MS.
 const CACHE_MS = 15_000;

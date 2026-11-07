@@ -77,7 +77,7 @@ async function orderDto(order: IGuestOrder) {
         : null,
     result: resultOf(bill as ITransaction | null),
     failureReason: order.failureReason ?? null,
-    /** Kobo the transfer put in the phone number's Tela wallet, for a failed order. */
+    /** Kobo the transfer put in the phone number's Tasa wallet, for a failed order. */
     inWallet: order.status === 'failed' && funding?.status === 'success' ? funding.amount : 0,
     createdAt: order.createdAt.toISOString(),
   };
@@ -87,11 +87,11 @@ async function orderDto(order: IGuestOrder) {
 function textFor(order: IGuestOrder, bill: ITransaction | null, inWallet: number) {
   if (order.status === 'delivered') {
     const b = bill?.bill;
-    if (b?.pins?.length) return `Tela: your ${order.bill.planName ?? order.bill.provider} PIN${b.pins.length > 1 ? 's' : ''}: ${b.pins.map((p) => p.pin).join(', ')}. Ref ${bill!.reference}. Keep this message.`;
-    if (b?.token) return `Tela: ${b.token.replace(/^Token\s*:\s*/i, 'Token ')}${b.units ? ` (${b.units})` : ''} for meter ${order.bill.account}. Ref ${bill!.reference}.`;
-    return `Tela: your ${formatNaira(order.amount)} ${order.bill.provider} ${order.bill.serviceId === 'airtime' ? 'top-up' : 'payment'} for ${order.bill.account} went through. Ref ${bill?.reference ?? order.reference}.`;
+    if (b?.pins?.length) return `Tasa: your ${order.bill.planName ?? order.bill.provider} PIN${b.pins.length > 1 ? 's' : ''}: ${b.pins.map((p) => p.pin).join(', ')}. Ref ${bill!.reference}. Keep this message.`;
+    if (b?.token) return `Tasa: ${b.token.replace(/^Token\s*:\s*/i, 'Token ')}${b.units ? ` (${b.units})` : ''} for meter ${order.bill.account}. Ref ${bill!.reference}.`;
+    return `Tasa: your ${formatNaira(order.amount)} ${order.bill.provider} ${order.bill.serviceId === 'airtime' ? 'top-up' : 'payment'} for ${order.bill.account} went through. Ref ${bill?.reference ?? order.reference}.`;
   }
-  return `Tela: we couldn't complete your ${order.bill.provider} payment. ${inWallet > 0 ? `${formatNaira(inWallet)} is safe in a Tela wallet for this number: download Tela and sign up with ${localPhone(order.phone)} to use it.` : 'No money was taken.'} Ref ${order.reference}.`;
+  return `Tasa: we couldn't complete your ${order.bill.provider} payment. ${inWallet > 0 ? `${formatNaira(inWallet)} is safe in a Tasa wallet for this number: download Tasa and sign up with ${localPhone(order.phone)} to use it.` : 'No money was taken.'} Ref ${order.reference}.`;
 }
 
 export const GuestService = {
@@ -121,15 +121,15 @@ export const GuestService = {
     await ConfigService.assertEnabled('guest_pay', 'funding', 'bills', billFeature(input.bill.serviceId));
     const today = await GuestOrderModel.countDocuments({ phone: input.phone, createdAt: { $gt: new Date(Date.now() - 24 * 3_600_000) } });
     if (today >= GUEST_DAILY_ORDERS) {
-      throw new AppError(429, 'You’ve made a few orders today. Use the Tela app for more, or try again tomorrow.', 'GUEST_DAILY_LIMIT');
+      throw new AppError(429, 'You’ve made a few orders today. Use the Tasa app for more, or try again tomorrow.', 'GUEST_DAILY_LIMIT');
     }
-    // The phone number's Tela account: theirs already, or one they claim by signing up with it.
+    // The phone number's Tasa account: theirs already, or one they claim by signing up with it.
     const { user } = await UsersService.findOrCreate({ type: 'phone', value: input.phone });
-    if (user.status !== 'active') throw forbidden('This number can’t pay on the website. Contact Tela support.');
+    if (user.status !== 'active') throw forbidden('This number can’t pay on the website. Contact Tasa support.');
 
     const priced = await BillsService.quote(user.id as string, { kind: 'bill', ...input.bill, autoApply: false });
     if (priced.total > GUEST_MAX_TOTAL) {
-      throw unprocessable(`Pay up to ${formatNaira(GUEST_MAX_TOTAL)} on the website. For more, use the Tela app.`, 'GUEST_AMOUNT_LIMIT');
+      throw unprocessable(`Pay up to ${formatNaira(GUEST_MAX_TOTAL)} on the website. For more, use the Tasa app.`, 'GUEST_AMOUNT_LIMIT');
     }
     const fundingQuote = await WalletService.quote(user.id as string, priced.total);
     const funding = await WalletService.startFunding(user.id as string, fundingQuote.id);
@@ -239,7 +239,7 @@ export const GuestService = {
     if (done) await this.settled(done, null);
   },
 
-  /** Text them what they paid for (or where their money is), and tell the rest of Tela. */
+  /** Text them what they paid for (or where their money is), and tell the rest of Tasa. */
   async settled(order: IGuestOrder, bill: ITransaction | null) {
     const funding = await TransactionModel.findById(order.funding).select('status amount').lean();
     const inWallet = order.status === 'failed' && funding?.status === 'success' ? funding.amount : 0;

@@ -24,7 +24,7 @@ import { AVATAR_MAX_BYTES, AvatarsService } from './avatars.service';
 import { UsersService } from './users.service';
 
 /**
- * `/api/users/lookup` — find a Tela user by username, phone or email before sending money
+ * `/api/users/lookup` — find a Tasa user by username, phone or email before sending money
  * or a gift. POST so phone numbers and emails stay out of URLs and access logs.
  */
 export async function usersLookupRoutes(app: FastifyInstance) {

@@ -10,7 +10,7 @@ const SERVICE_NAMES: Record<string, string> = {
   jamb: 'exam PIN',
 };
 
-const who = (t: ITransaction) => (t.counterparty?.username ? `@${t.counterparty.username}` : (t.counterparty?.name ?? 'a Tela user'));
+const who = (t: ITransaction) => (t.counterparty?.username ? `@${t.counterparty.username}` : (t.counterparty?.name ?? 'a Tasa user'));
 
 /** Default copy for the activity feed. The app may localise from the structured fields instead. */
 function describe(t: ITransaction): { title: string; subtitle: string } {
@@ -38,9 +38,9 @@ function describe(t: ITransaction): { title: string; subtitle: string } {
       return { title, subtitle: `${b?.account ?? ''} · ${outcome}${coupon}` };
     }
     case 'transfer_out':
-      return { title: 'Tela transfer', subtitle: `To ${who(t)}` };
+      return { title: 'Tasa transfer', subtitle: `To ${who(t)}` };
     case 'transfer_in':
-      return { title: 'Tela transfer', subtitle: `From ${who(t)}` };
+      return { title: 'Tasa transfer', subtitle: `From ${who(t)}` };
     case 'gift':
       return {
         title: 'Gifted utility bill',

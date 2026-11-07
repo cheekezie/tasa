@@ -62,7 +62,7 @@ function bucketKeys(from: Date, to: Date, unit: 'day' | 'month') {
 
 export const ReportsService = {
   /**
-   * The back office's version of the app's insights: what Tela earned in a period, over time,
+   * The back office's version of the app's insights: what Tasa earned in a period, over time,
    * and what each bill category brought in (our charge plus VTpass's commission). Periods are
    * the app's, in Lagos time, from the ledger, so it agrees with the P&L.
    */
@@ -155,7 +155,7 @@ export const ReportsService = {
       period,
       from: from.toISOString(),
       to: current.to.toISOString(),
-      /** Kobo: everything Tela earned, and the part that came from bills. */
+      /** Kobo: everything Tasa earned, and the part that came from bills. */
       income: total,
       billIncome,
       previous: previous && { income: previousTotal ?? 0, billIncome: prev[0] ? income(prev[0].bills) : 0 },
@@ -297,7 +297,7 @@ export const ReportsService = {
   },
 
   /**
-   * Everything Tela has given away: its own coupons/gifts and its promos, with cost in the
+   * Everything Tasa has given away: its own coupons/gifts and its promos, with cost in the
    * period, cost to date, and how much more each could still cost.
    */
   async giveaways(range: Range) {
@@ -309,14 +309,14 @@ export const ReportsService = {
       LedgerService.sumsByAccount(PNL_PREFIXES.giveaways),
       LedgerService.sumsByAccount(PNL_PREFIXES.promotions),
     ]);
-    const tela = await CouponModel.find({ $or: [{ kind: 'promo' }, { fundedBy: 'tela' }] }).sort({ createdAt: -1 });
+    const tasaFunded = await CouponModel.find({ $or: [{ kind: 'promo' }, { fundedBy: 'tasa' }] }).sort({ createdAt: -1 });
     const usage = await CouponUseModel.aggregate<{ _id: Types.ObjectId; uses: number; users: Types.ObjectId[] }>([
-      { $match: { coupon: { $in: tela.map((c) => c._id) } } },
+      { $match: { coupon: { $in: tasaFunded.map((c) => c._id) } } },
       { $group: { _id: '$coupon', uses: { $sum: 1 }, users: { $addToSet: '$user' } } },
     ]);
     const usageBy = new Map(usage.map((u) => [u._id.toString(), u]));
 
-    const items = tela.map((c) => {
+    const items = tasaFunded.map((c) => {
       const isPromo = c.kind === 'promo';
       const account = `${isPromo ? PNL_PREFIXES.promotions : PNL_PREFIXES.giveaways}${c.id as string}`;
       const toDate = (isPromo ? allPromos : allGiveaways).get(account) ?? 0;
@@ -378,7 +378,7 @@ export const ReportsService = {
       from: range.from.toISOString(),
       to: range.to.toISOString(),
       users: { total: users, new: newUsers },
-      /** What Tela owes users right now (all wallet balances). */
+      /** What Tasa owes users right now (all wallet balances). */
       walletLiability: wallets[0]?.total ?? 0,
       funding: {
         count: (pick('funding', 'success')?.count ?? 0) + (pick('beneficiary_collection', 'success')?.count ?? 0),

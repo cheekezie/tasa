@@ -46,14 +46,14 @@ export function toQuoteDto(q: IQuote) {
       },
     }),
     ...(q.giftTo?.label && {
-      giftTo: { recipient: q.giftTo.label, name: q.giftTo.name ?? null, onTela: Boolean(q.giftTo.user), message: q.giftTo.message ?? null },
+      giftTo: { recipient: q.giftTo.label, name: q.giftTo.name ?? null, onTasa: Boolean(q.giftTo.user), message: q.giftTo.message ?? null },
     }),
     ...(q.gift?.recipientLabel && {
       gift: {
         recipient: q.gift.recipientLabel,
         recipientName: q.gift.recipientName ?? null,
-        /** false = not on Tela yet; the gift goes as an SMS/email invite. */
-        onTela: Boolean(q.gift.recipientUser),
+        /** false = not on Tasa yet; the gift goes as an SMS/email invite. */
+        onTasa: Boolean(q.gift.recipientUser),
         serviceId: q.gift.serviceId,
         message: q.gift.message ?? null,
       },

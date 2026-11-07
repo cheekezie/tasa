@@ -15,7 +15,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(4110),
   /** Must be a replica set (or Atlas): wallet movements run in Mongo transactions. */
-  MONGODB_URI: z.string().default('mongodb://127.0.0.1:27018/tela-app?replicaSet=rs0'),
+  MONGODB_URI: z.string().default('mongodb://127.0.0.1:27018/tasa-app?replicaSet=rs0'),
   REDIS_URL: z.string().default('redis://127.0.0.1:6379'),
   /** Browser origins (Expo web, admin). Native apps send no Origin and are unaffected. */
   CORS_ORIGINS: list('http://localhost:8081,http://localhost:5173'),
@@ -48,7 +48,7 @@ const envSchema = z.object({
    * SaySwitch needs an email on every collection. Users who haven't added one get
    * `<userId>@<this domain>` — use a domain you own so nothing bounces to a stranger.
    */
-  CUSTOMER_EMAIL_DOMAIN: z.string().default('customers.tela.ng'),
+  CUSTOMER_EMAIL_DOMAIN: z.string().default('customers.tasa.ng'),
 
   // ── VTpass (bill payments) ─────────────────────────────────────────────
   /** Sandbox until VTpass provisions the live account; then https://vtpass.com/api */
@@ -65,20 +65,20 @@ const envSchema = z.object({
    * version the user saw.
    */
   AUTOPAY_TERMS_VERSION: z.string().default('2026-10-28'),
-  AUTOPAY_TERMS_URL: z.string().default('https://tela.ng/terms/auto-pay'),
+  AUTOPAY_TERMS_URL: z.string().default('https://tasa.ng/terms/auto-pay'),
 
   /** How long a funding account is shown to the user. Late transfers are still credited. */
   FUNDING_ACCOUNT_TTL_MINUTES: z.coerce.number().int().positive().default(30),
   QUOTE_TTL_MINUTES: z.coerce.number().int().positive().default(15),
 
   TERMII_API_KEY: z.string().optional(),
-  TERMII_SENDER_ID: z.string().default('Tela'),
+  TERMII_SENDER_ID: z.string().default('Tasa'),
   /** Email OTPs (for when SMS doesn't arrive) and receipts. ZeptoMail "Send Mail" token. */
   ZEPTOMAIL_TOKEN: z.string().optional(),
-  EMAIL_FROM_ADDRESS: z.string().default('noreply@tela.ng'),
-  EMAIL_FROM_NAME: z.string().default('Tela'),
+  EMAIL_FROM_ADDRESS: z.string().default('noreply@tasa.ng'),
+  EMAIL_FROM_NAME: z.string().default('Tasa'),
   /** The public website: links in emails to website orders (and its store links). */
-  SITE_URL: z.string().url().default('https://tela.africa'),
+  SITE_URL: z.string().url().default('https://tasa.ng'),
   /**
    * VTpass wants a customer phone on every bill. Users who signed up by email may not have
    * one yet; their bills carry this business number instead.

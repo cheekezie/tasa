@@ -14,10 +14,10 @@ import { NotificationsService } from './notifications.service';
 export function registerNotifications() {
   // Push reaches the victim's old device; email matters because a SIM swap doesn't reach it.
   bus.on('pin.reset', async ({ userId }) => {
-    const body = "Your Tela PIN was changed. If this wasn't you, contact support now.";
+    const body = "Your Tasa PIN was changed. If this wasn't you, contact support now.";
     await NotificationsService.notify(userId, { type: 'system', title: 'PIN changed', body });
     const user = await UserModel.findById(userId).select('email');
-    if (user?.email) await NotificationsService.email(user.email, 'Your Tela PIN was changed', body);
+    if (user?.email) await NotificationsService.email(user.email, 'Your Tasa PIN was changed', body);
   });
 
   bus.on('bvn.reviewed', async ({ userId, status, reason }) => {
@@ -39,6 +39,18 @@ export function registerNotifications() {
     });
   });
 
+  // ── Students ──
+  bus.on('student.verified', async ({ userId, status, reason }) => {
+    await NotificationsService.notify(userId, {
+      type: 'system',
+      title: status === 'verified' ? 'You’re a verified student' : 'Your student verification needs another look',
+      body:
+        status === 'verified'
+          ? 'Tasa has checked your student details.'
+          : `We couldn’t verify you as a student: ${reason}. Send a photo of your student ID card from your student profile.`,
+    });
+  });
+
   // ── Groups ──
   bus.on('group.member', async ({ memberId, stage }) => {
     const member = await GroupMemberModel.findById(memberId);
@@ -49,11 +61,28 @@ export function registerNotifications() {
       const user = await UserModel.findById(member.user).select('fullName username');
       const who = user ? publicName(user) : 'Someone';
       for (const e of group.executives) {
-        await NotificationsService.notify(e.user, { type: 'system', title: `${group.name}: new join request`, body: `${who} asked to join. Approve or decline them in the group.`, data });
+        await NotificationsService.notify(e.user, {
+          type: 'system',
+          title: `${group.name}: new join request`,
+          body: `${who} asked to join. Approve or decline them in the group.`,
+          data,
+        });
       }
     }
-    if (stage === 'approved') await NotificationsService.notify(member.user, { type: 'system', title: `You’re in ${group.name}`, body: 'An executive approved you. You can pay your dues now.', data });
-    if (stage === 'rejected') await NotificationsService.notify(member.user, { type: 'system', title: `${group.name} declined your request`, body: 'Contact the group if you think this is a mistake.', data });
+    if (stage === 'approved')
+      await NotificationsService.notify(member.user, {
+        type: 'system',
+        title: `You’re in ${group.name}`,
+        body: 'An executive approved you. You can pay your dues now.',
+        data,
+      });
+    if (stage === 'rejected')
+      await NotificationsService.notify(member.user, {
+        type: 'system',
+        title: `${group.name} declined your request`,
+        body: 'Contact the group if you think this is a mistake.',
+        data,
+      });
   });
 
   bus.on('group.due', async ({ groupId, dueId }) => {
@@ -61,7 +90,9 @@ export function registerNotifications() {
     const due = group?.dues.find((d) => d._id.toString() === dueId);
     if (!group || !due) return;
     // A one-off is for whoever's in the group now; a recurring due for every member.
-    const members = await GroupMemberModel.find({ group: group._id, status: 'active', ...(due.kind === 'one_off' && { joinedAt: { $lte: due.createdAt } }) }).select('user');
+    const members = await GroupMemberModel.find({ group: group._id, status: 'active', ...(due.kind === 'one_off' && { joinedAt: { $lte: due.createdAt } }) }).select(
+      'user',
+    );
     const price = due.kind === 'recurring' ? `${formatNaira(due.amount)} ${due.period}` : formatNaira(due.amount);
     const body = due.compulsory
       ? `${price}${due.dueAt ? `, due by ${due.dueAt.toLocaleDateString('en-NG', { day: 'numeric', month: 'short', timeZone: 'Africa/Lagos' })}` : ''}. Pay it from the group.`
@@ -71,13 +102,13 @@ export function registerNotifications() {
     }
   });
 
-    bus.on('group.suspension', async ({ groupId, suspended, reason }) => {
+  bus.on('group.suspension', async ({ groupId, suspended, reason }) => {
     const group = await GroupModel.findById(groupId);
     if (!group) return;
     for (const e of group.executives) {
       await NotificationsService.notify(e.user, {
         type: 'system',
-        title: suspended ? `${group.name} is paused by Tela` : `${group.name} is back`,
+        title: suspended ? `${group.name} is paused by Tasa` : `${group.name} is back`,
         body: suspended
           ? `${reason ? `${reason}. ` : ''}Members can't join or pay, and withdrawals wait, while we review. The group's money is safe.`
           : 'Members can join and pay again, and withdrawals are open.',
@@ -94,24 +125,46 @@ export function registerNotifications() {
     const to = `${change.to.accountName}, ${change.to.bankName} •••• ${change.to.accountNumber.slice(-4)}`;
     const executives = group.executives.map((e) => e.user);
     const tell = async (users: typeof executives, title: string, body: string) => {
-      for (const user of users) await NotificationsService.notify(user, { type: 'system', title, body, data, dedupeKey: `payout-change:${changeId}:${stage}:${String(user)}` });
+      for (const user of users)
+        await NotificationsService.notify(user, { type: 'system', title, body, data, dedupeKey: `payout-change:${changeId}:${stage}:${String(user)}` });
     };
     if (stage === 'proposed') {
-      await tell(change.cosigners.map((c) => c.user), `${group.name}: approve a new payout account?`, `The owner wants dues paid out to ${to}. Open the group to approve or object.`);
-      await tell(executives.filter((e) => !change.cosigners.some((c) => c.user.equals(e))), `${group.name}: payout account change`, `The owner proposed paying dues out to ${to}. You can object in the group.`);
+      await tell(
+        change.cosigners.map((c) => c.user),
+        `${group.name}: approve a new payout account?`,
+        `The owner wants dues paid out to ${to}. Open the group to approve or object.`,
+      );
+      await tell(
+        executives.filter((e) => !change.cosigners.some((c) => c.user.equals(e))),
+        `${group.name}: payout account change`,
+        `The owner proposed paying dues out to ${to}. You can object in the group.`,
+      );
     }
     if (stage === 'cooling_off') {
       const members = await GroupMemberModel.find({ group: group._id, status: 'active' }).select('user').lean();
       const when = change.effectiveAt!.toLocaleString('en-NG', { timeZone: 'Africa/Lagos', dateStyle: 'medium', timeStyle: 'short' });
       await tell(executives, `${group.name}: payout account changes ${when}`, `Approved. Dues will be paid out to ${to} from ${when} unless an executive objects.`);
-      await tell(members.map((m) => m.user), `${group.name} is changing where dues go`, `From ${when}, dues will be paid out to ${to}. You’ll be asked to accept this before paying again.`);
+      await tell(
+        members.map((m) => m.user),
+        `${group.name} is changing where dues go`,
+        `From ${when}, dues will be paid out to ${to}. You’ll be asked to accept this before paying again.`,
+      );
     }
     if (stage === 'applied') {
       const members = await GroupMemberModel.find({ group: group._id, status: 'active' }).select('user').lean();
-      await tell(members.map((m) => m.user), `${group.name}: accept the new terms`, `Dues are now paid out to ${to}. Accept the new terms in the group before your next payment.`);
+      await tell(
+        members.map((m) => m.user),
+        `${group.name}: accept the new terms`,
+        `Dues are now paid out to ${to}. Accept the new terms in the group before your next payment.`,
+      );
       await tell(executives, `${group.name}: new payout account is live`, `Withdrawals now go to ${to}.`);
     }
-    if (stage === 'rejected') await tell(executives, `${group.name}: payout account change stopped`, `An executive objected: ${change.closedReason ?? 'no reason given'}. The account stays as it was.`);
+    if (stage === 'rejected')
+      await tell(
+        executives,
+        `${group.name}: payout account change stopped`,
+        `An executive objected: ${change.closedReason ?? 'no reason given'}. The account stays as it was.`,
+      );
     if (stage === 'expired') await tell(executives, `${group.name}: payout account change lapsed`, 'Not every co-signer approved in time. The account stays as it was.');
   });
 
@@ -136,10 +189,22 @@ export function registerNotifications() {
       return;
     }
     if (stage === 'rescheduled') {
-      const when = split.deadline.toLocaleString('en-NG', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Africa/Lagos' });
+      const when = split.deadline.toLocaleString('en-NG', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZone: 'Africa/Lagos',
+      });
       for (const share of split.shares) {
         if (share.user.equals(split.starter) || share.paidAt) continue;
-        await NotificationsService.notify(share.user, { type: 'bill', title: `${split.title}: new deadline`, body: `Pay your ${formatNaira(share.amount)} share by ${when}.`, data });
+        await NotificationsService.notify(share.user, {
+          type: 'bill',
+          title: `${split.title}: new deadline`,
+          body: `Pay your ${formatNaira(share.amount)} share by ${when}.`,
+          data,
+        });
       }
       return;
     }
@@ -162,7 +227,7 @@ export function registerNotifications() {
     await NotificationsService.notify(userId, {
       type: 'system',
       title: `How was ${title}?`,
-      body: `Rate ${organiser} from your ticket in Tela. Your stars help other people pick good events.`,
+      body: `Rate ${organiser} from your ticket in Tasa. Your stars help other people pick good events.`,
       data: { eventId },
     });
   });
@@ -215,7 +280,7 @@ export function registerNotifications() {
       : t.bill.pins?.length
         ? ` PIN: ${t.bill.pins.map((p) => p.pin).join(', ')}.`
         : '';
-    const text = `${from} paid your ${t.bill.provider} ${t.bill.planName ?? ''} (${formatNaira(t.amount)}) for ${t.bill.account} on Tela.${proof}`
+    const text = `${from} paid your ${t.bill.provider} ${t.bill.planName ?? ''} (${formatNaira(t.amount)}) for ${t.bill.account} on Tasa.${proof}`
       .replace(/\s+/g, ' ')
       .replace(' ()', '');
     const full = t.giftTo.message ? `${text} "${t.giftTo.message}"` : text;
@@ -232,11 +297,11 @@ export function registerNotifications() {
         dedupeKey: `bill-gift:${t.reference}`,
       });
     }
-    // Outside the app too: the token is useful even without Tela installed.
+    // Outside the app too: the token is useful even without Tasa installed.
     const phone = recipient?.phone ?? t.giftTo.phone ?? (t.bill.serviceId === 'airtime' ? `+234${t.bill.account.slice(1)}` : undefined);
     const address = recipient?.email ?? t.giftTo.email;
     if (phone) await NotificationsService.sms(phone, full);
-    else if (address) await NotificationsService.email(address, `${from} paid a bill for you on Tela 🎁`, full);
+    else if (address) await NotificationsService.email(address, `${from} paid a bill for you on Tasa 🎁`, full);
   });
 
   bus.on('bill.failed', async ({ transactionId }) => {
@@ -266,7 +331,7 @@ export function registerNotifications() {
     const c = await CouponModel.findById(couponId);
     if (!c || c.kind !== 'gift') return;
     const sender = c.owner ? await UserModel.findById(c.owner).select('fullName username') : null;
-    const senderName = c.fundedBy === 'tela' ? 'Tela' : (sender?.fullName ?? `@${sender?.username ?? 'A friend'}`);
+    const senderName = c.fundedBy === 'tasa' ? 'Tasa' : (sender?.fullName ?? `@${sender?.username ?? 'A friend'}`);
     const text = CouponsService.describeGift(c, senderName);
     const full = c.message ? `${text} "${c.message}"` : text;
     const recipient = c.recipientUser
@@ -275,11 +340,11 @@ export function registerNotifications() {
     if (recipient) {
       await NotificationsService.notify(recipient._id, { type: 'gift', title: 'You received a gift 🎁', body: text, data: { code: c.code } });
     }
-    // Also reach them outside the app: an invite if they aren't on Tela yet.
+    // Also reach them outside the app: an invite if they aren't on Tasa yet.
     const phone = recipient?.phone ?? c.recipientPhone;
     const address = recipient?.email ?? c.recipientEmail;
     if (phone) await NotificationsService.sms(phone, full);
-    else if (address) await NotificationsService.email(address, `${senderName} sent you a gift on Tela 🎁`, full);
+    else if (address) await NotificationsService.email(address, `${senderName} sent you a gift on Tasa 🎁`, full);
   });
 
   bus.on('recurring.skipped', async ({ recurringId, reason }) => {

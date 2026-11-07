@@ -25,13 +25,16 @@ export type DomainEvents = {
   /** Compliance's decision on an organiser's photo and ID. */
   'seller.reviewed': { userId: string; status: 'approved' | 'rejected'; reason?: string | undefined };
   'seller.suspension': { userId: string; suspended: boolean; reason?: string | undefined };
+  /** A student profile was verified (school email or ID card), or its ID card turned down. */
+  'student.verified': { userId: string; status: 'verified' | 'rejected'; reason?: string | undefined };
+  /** Tasa's decision on a group's proof that it's who it says. */
   /** Someone joined a group, asked to, or was let in or turned away. */
   'group.member': { memberId: string; stage: 'joined' | 'requested' | 'approved' | 'rejected' };
   /** An executive added a due: the members it applies to are told. */
   'group.due': { groupId: string; dueId: string };
   /** A split bill was made, paid, or ended without paying (everyone refunded). */
   'split.update': { splitId: string; stage: 'created' | 'rescheduled' | 'paid' | 'failed' | 'expired' | 'cancelled' };
-  /** Tela suspended a group, or lifted it. */
+  /** Tasa suspended a group, or lifted it. */
   'group.suspension': { groupId: string; suspended: boolean; reason?: string | undefined };
   /** A payout account change moved on: co-signers to ask, everyone to tell. */
   'group.payoutChange': { changeId: string; stage: 'proposed' | 'cooling_off' | 'applied' | 'rejected' | 'expired' };

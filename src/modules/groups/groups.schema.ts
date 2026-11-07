@@ -64,6 +64,14 @@ export const DueReportQuerySchema = PaginationQuerySchema.extend({
   search: z.string().trim().max(60).optional(),
 });
 
+export const ReceiptCodeParamsSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(10)
+    .max(60)
+    .regex(/^[A-Za-z0-9-]+$/),
+});
 export const JoinCodeParamsSchema = z.object({ code: z.string().trim().toUpperCase().min(4).max(16) });
 export const JoinGroupSchema = z.object({
   code: z.string().trim().toUpperCase().min(4).max(16),
@@ -78,7 +86,10 @@ export const AcceptTermsSchema = z.object({ acceptTerms: z.number().int().positi
 export const MemberParamsSchema = z.object({ id: ObjectIdSchema, memberId: ObjectIdSchema });
 export const MembersQuerySchema = PaginationQuerySchema.extend({
   status: z.enum(['pending', 'active']).optional(),
-  owing: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
+  owing: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   search: z.string().trim().max(60).optional(),
 });
 export const BackfillSchema = z.object({
@@ -128,7 +139,10 @@ export const PayQuoteSchema = z.object({ quoteId: ObjectIdSchema, pin: PinSchema
 
 // ── Back office ──
 export const AdminGroupsQuerySchema = PaginationQuerySchema.extend({
-  suspended: z.enum(['true', 'false']).transform((v) => v === 'true').optional(),
+  suspended: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   search: z.string().trim().min(2).max(60).optional(),
 });
 export const GroupSuspensionSchema = z.discriminatedUnion('suspended', [
