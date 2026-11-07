@@ -54,7 +54,7 @@ export function PayForm({ product, providers, plans }: { product: Product; provi
       : naira_ < min
         ? `The least you can pay${selectedProvider ? ` for ${selectedProvider.name}` : ''} is ₦${min.toLocaleString('en-NG')}.`
         : naira_ > MAX_NAIRA
-          ? `On the website you can pay up to ₦${MAX_NAIRA.toLocaleString('en-NG')}. Use the Tela app for more.`
+          ? `On the website you can pay up to ₦${MAX_NAIRA.toLocaleString('en-NG')}. Use the Tasa app for more.`
           : null;
   const accountLooksRight = product.accountInput === 'tel' ? PHONE.test(cleanPhone(account)) : account.trim().length >= 6;
   // For airtime and WAEC the number they're topping up is usually their own.
@@ -108,7 +108,7 @@ export function PayForm({ product, providers, plans }: { product: Product; provi
   };
 
   return (
-    <form onSubmit={submit} className="mt-8 space-y-5 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
+    <form onSubmit={submit} className="animate-fade-up mt-8 space-y-5 rounded-3xl bg-white p-6 ring-1 ring-line sm:p-8">
       {product.serviceId === 'electricity' && (
         <ProviderSelect
           label="Your DisCo"
@@ -264,7 +264,7 @@ export function PayForm({ product, providers, plans }: { product: Product; provi
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <span className="mt-1.5 block text-xs text-ink-subtle">We text it here. If anything goes wrong, the money waits in a Tela wallet for this number.</span>
+        <span className="mt-1.5 block text-xs text-ink-subtle">We text it here. If anything goes wrong, the money waits in a Tasa wallet for this number.</span>
       </label>
 
       <label className="block">
@@ -287,7 +287,7 @@ export function PayForm({ product, providers, plans }: { product: Product; provi
       <button
         type="submit"
         disabled={!ready || submitting}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3.5 font-semibold text-white transition hover:bg-brand-deep disabled:cursor-not-allowed disabled:opacity-50">
+        className="press flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3.5 font-semibold text-white transition hover:bg-brand-deep disabled:cursor-not-allowed disabled:opacity-50">
         {submitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
         {product.priced === 'plan' && plan ? `Continue · ${naira(plan.amount)}` : naira_ ? `Continue · ${naira(naira_ * 100)}` : 'Continue'}
       </button>

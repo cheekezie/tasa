@@ -1,7 +1,7 @@
 import { appLinks } from '@/lib/site';
 
 /**
- * Universal Links: iOS fetches this when Tela is installed to learn which links on this domain
+ * Universal Links: iOS fetches this when Tasa is installed to learn which links on this domain
  * the app opens. Only invite links (`/g/*`); everything else stays on the website.
  */
 export function GET() {

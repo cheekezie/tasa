@@ -4,7 +4,7 @@ import { Sora } from 'next/font/google';
 import { site } from '@/lib/site';
 import './globals.css';
 
-// The app's typeface, so the site reads like Tela.
+// The app's typeface, so the site reads like Tasa.
 const sora = Sora({ subsets: ['latin'], display: 'swap', variable: '--font-sora' });
 
 const description =
@@ -12,11 +12,11 @@ const description =
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: 'Tela: pay bills, split them, collect dues', template: '%s · Tela' },
+  title: { default: 'Tasa: pay bills, split them, collect dues', template: '%s · Tasa' },
   description,
-  applicationName: 'Tela',
-  openGraph: { type: 'website', siteName: 'Tela', title: 'Tela: pay bills, split them, collect dues', description, url: '/' },
-  twitter: { card: 'summary_large_image', title: 'Tela', description },
+  applicationName: 'Tasa',
+  openGraph: { type: 'website', siteName: 'Tasa', title: 'Tasa: pay bills, split them, collect dues', description, url: '/' },
+  twitter: { card: 'summary_large_image', title: 'Tasa', description },
 };
 
 export const viewport: Viewport = {
@@ -27,7 +27,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-NG" className={sora.variable}>
+    <html lang="en-NG" className={sora.variable} suppressHydrationWarning>
+      <head>
+        {/* Marks that scripts run, so scroll reveals may start hidden; without it everything just shows. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body className="flex min-h-screen flex-col bg-surface">{children}</body>
     </html>
   );

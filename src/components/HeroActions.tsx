@@ -52,7 +52,7 @@ export function HeroActions() {
             setAndroid(/android/i.test(navigator.userAgent));
             setOpen((o) => !o);
           }}
-          className='inline-flex items-center gap-2 text-sm rounded-2xl bg-brand px-5 py-3.5 font-semibold text-white shadow-lg shadow-brand/20 transition hover:bg-brand-deep'
+          className='press inline-flex items-center gap-2 text-sm rounded-2xl bg-brand px-5 py-3.5 font-semibold text-white shadow-lg shadow-brand/20 transition hover:bg-brand-deep'
         >
           <Download className='h-5 w-5' aria-hidden />
           Download the App
@@ -61,7 +61,7 @@ export function HeroActions() {
         {open && (
           <div
             role='menu'
-            className='absolute left-0 z-30 mt-2 w-60 rounded-2xl bg-white p-1.5 shadow-xl shadow-brand-deep/10 ring-1 ring-line'
+            className='animate-fade-up absolute left-0 z-30 mt-2 w-60 rounded-2xl bg-white p-1.5 shadow-xl shadow-brand-deep/10 ring-1 ring-line'
           >
             {ordered.map((s) => {
               const external = s.href.startsWith('http');
@@ -91,7 +91,7 @@ export function HeroActions() {
       </div>
       <Link
         href='/pay'
-        className='inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3.5 font-semibold text-brand ring-1 ring-line transition hover:ring-brand'
+        className='press inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3.5 font-semibold text-brand ring-1 ring-line transition hover:ring-brand'
       >
         Pay a bill
         <ArrowRight className='h-4 w-4' aria-hidden />

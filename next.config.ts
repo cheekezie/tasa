@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    // Placeholder photography until Tela's own replaces it.
+    // Placeholder photography until Tasa's own replaces it.
     // Object form, not `new URL(...)`: a URL pattern's empty query would reject Pexels' `?auto=…&w=…` sizing.
     remotePatterns: [{ protocol: 'https', hostname: 'images.pexels.com', pathname: '/photos/**' }],
   },

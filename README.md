@@ -1,11 +1,11 @@
-# Tela website
+# Tasa website
 
-The public site for Tela: the landing page (features, how it works, why Tela, FAQ, store links)
+The public site for Tasa: the landing page (features, how it works, why Tasa, FAQ, store links)
 and the landing page for group invite links, `/g/:code`.
 
 ## Invite links
 
-`https://<site>/g/CODE` is the link the app shares. With Tela installed, iOS (Universal Links)
+`https://<site>/g/CODE` is the link the app shares. With Tasa installed, iOS (Universal Links)
 and Android (App Links) open the app straight to the join screen. Otherwise this site shows the
 group's name and picture (from the API's public preview), the code, and the store buttons.
 

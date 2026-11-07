@@ -20,7 +20,7 @@ async function call<T>(path: string, init?: RequestInit & { next?: { revalidate:
   try {
     res = await fetch(`${base()}${path}`, { ...init, headers: { 'Content-Type': 'application/json', ...init?.headers } });
   } catch {
-    throw new GuestApiError('We couldn’t reach Tela. Check your connection and try again.');
+    throw new GuestApiError('We couldn’t reach Tasa. Check your connection and try again.');
   }
   const body = (await res.json().catch(() => null)) as { data?: T; message?: string; code?: string } | null;
   if (!res.ok || !body) throw new GuestApiError(body?.message ?? 'Something went wrong. Try again.', body?.code);

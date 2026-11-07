@@ -1,7 +1,7 @@
 import { appLinks } from '@/lib/site';
 
 /**
- * Android App Links: proves this domain belongs to the Tela app, so links open it without asking
+ * Android App Links: proves this domain belongs to the Tasa app, so links open it without asking
  * "open with…". The fingerprints are the app's signing certificates (Play App Signing).
  */
 export function GET() {

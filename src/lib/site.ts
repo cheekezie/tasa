@@ -1,25 +1,25 @@
 /**
- * Everything the site needs to know about where Tela lives, from the environment, so the same
+ * Everything the site needs to know about where Tasa lives, from the environment, so the same
  * build works on staging and production. See `.env.example`.
  */
 export const site = {
-  name: 'Tela',
+  name: 'Tasa',
   /** The public site, also the domain invite links (`/g/:code`) open the app from. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tela.africa',
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tasa.ng',
   appStoreUrl: process.env.NEXT_PUBLIC_APP_STORE_URL ?? '',
   playStoreUrl: process.env.NEXT_PUBLIC_PLAY_STORE_URL ?? '',
   /**
-   * The Tela API, one address for the site's server and visitors' browsers alike. `NEXT_PUBLIC_`
+   * The Tasa API, one address for the site's server and visitors' browsers alike. `NEXT_PUBLIC_`
    * so Next.js includes it in the browser's code (set at build time).
    */
   apiUrl: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4110/api',
-  /** The app's own link scheme: opens Tela directly when it's installed. */
-  appScheme: 'tela',
+  /** The app's own link scheme: opens Tasa directly when it's installed. */
+  appScheme: 'tasa',
 };
 
 /** Universal Links (iOS) and App Links (Android) need these to prove the app and site belong together. */
 export const appLinks = {
-  /** `TEAMID.bundle.id`, e.g. `ABCDE12345.africa.tela.app`. */
+  /** `TEAMID.bundle.id`, e.g. `ABCDE12345.ng.tasa.app`. */
   iosAppId: process.env.IOS_APP_ID ?? '',
   androidPackage: process.env.ANDROID_PACKAGE ?? '',
   /** Comma-separated SHA-256 fingerprints of the Android signing certificates (Play App Signing + upload key). */
@@ -31,7 +31,7 @@ export const appLinks = {
   paths: ['/g/*'],
 };
 
-/** Placeholder photos from Pexels, to be swapped for Tela's own. Keep the aspect ratios when replacing. */
+/** Placeholder photos from Pexels, to be swapped for Tasa's own. Keep the aspect ratios when replacing. */
 const pexels = (id: number, width = 1400) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${width}`;
 export const photos = {
   hero: { src: pexels(6190671, 1200), alt: 'A smiling woman on a video call on her phone' },

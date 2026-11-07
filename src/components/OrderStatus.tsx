@@ -83,7 +83,7 @@ export function OrderStatus({ reference, accessKey }: { reference: string; acces
   const what = [order.bill.planName ?? order.bill.providerName, order.bill.account, order.bill.customerName].filter(Boolean).join(' · ');
 
   return (
-    <div className="space-y-6">
+    <div key={order.status} className="animate-fade-up space-y-6">
       <div>
         <p className="text-sm text-ink-muted">Order {order.reference}</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-brand-deep">
@@ -188,7 +188,7 @@ export function OrderStatus({ reference, accessKey }: { reference: string; acces
           <p className="mt-4 text-ink">{order.failureReason ?? 'The provider didn’t complete the payment.'}</p>
           {order.inWallet > 0 ? (
             <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-              Your {naira(order.inWallet)} is safe in a Tela wallet for {order.phone}. Get the app and sign up with that number to use it, or to try again.
+              Your {naira(order.inWallet)} is safe in a Tasa wallet for {order.phone}. Get the app and sign up with that number to use it, or to try again.
             </p>
           ) : (
             <p className="mt-3 text-sm text-ink-muted">No money was taken.</p>
@@ -200,7 +200,7 @@ export function OrderStatus({ reference, accessKey }: { reference: string; acces
         <div className="rounded-3xl bg-brand p-6 text-center text-white sm:p-8">
           <p className="text-lg font-semibold">Next time, it takes seconds</p>
           <p className="mx-auto mt-2 max-w-sm text-sm text-white/75">
-            With the Tela app you pay from your wallet: no transfer to wait for, and your PINs and tokens are always there.
+            With the Tasa app you pay from your wallet: no transfer to wait for, and your PINs and tokens are always there.
           </p>
           <StoreButtons tone="light" className="mt-5 justify-center" />
         </div>

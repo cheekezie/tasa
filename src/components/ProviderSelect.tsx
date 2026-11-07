@@ -130,7 +130,7 @@ export function ProviderSelect({
           id={`${id}-list`}
           role="listbox"
           aria-labelledby={`${id}-label`}
-          className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl bg-white p-1.5 shadow-xl shadow-brand-deep/10 ring-1 ring-line">
+          className="animate-fade-up absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-2xl bg-white p-1.5 shadow-xl shadow-brand-deep/10 ring-1 ring-line">
           {providers.map((p, i) => (
             <li
               key={p.code}

@@ -9,7 +9,7 @@ export const PLAY_PATH =
 function Badge({ href, path, small, big, tone }: { href: string; path: string; small: string; big: string; tone: 'dark' | 'light' }) {
   const live = !!href;
   const className = cn(
-    'inline-flex items-center gap-3 rounded-2xl px-5 py-3 transition',
+    'press inline-flex items-center gap-3 rounded-2xl px-5 py-3 transition',
     tone === 'dark' ? 'bg-ink text-white hover:bg-brand-deep' : 'bg-white text-ink ring-1 ring-line hover:ring-brand',
     !live && 'cursor-default opacity-90',
   );

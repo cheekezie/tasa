@@ -29,8 +29,8 @@ async function preview(code: string): Promise<Preview | null> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const code = cleanCode((await params).code);
   const group = await preview(code);
-  const title = group ? `Join ${group.name} on Tela` : 'Join a group on Tela';
-  const description = group ? `You've been invited to join ${group.name} and pay your dues on Tela.` : 'Open this invite in the Tela app to join the group.';
+  const title = group ? `Join ${group.name} on Tasa` : 'Join a group on Tasa';
+  const description = group ? `You've been invited to join ${group.name} and pay your dues on Tasa.` : 'Open this invite in the Tasa app to join the group.';
   return {
     title: { absolute: title },
     description,
@@ -41,8 +41,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * Where an invite link lands when the app doesn't open it: Tela isn't installed yet, or the link
- * was opened inside another app's browser. With Tela installed, iOS and Android open the app
+ * Where an invite link lands when the app doesn't open it: Tasa isn't installed yet, or the link
+ * was opened inside another app's browser. With Tasa installed, iOS and Android open the app
  * straight to the join screen and this page is never seen.
  */
 export default async function InvitePage({ params }: Props) {
@@ -52,15 +52,15 @@ export default async function InvitePage({ params }: Props) {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-surface px-4 py-10">
-      <Link href="/" aria-label="Tela home">
-        <Image src="/brand/tela-logo.png" alt="Tela Africa" width={140} height={42} priority className="h-8 w-auto" />
+      <Link href="/" aria-label="Tasa home">
+        <Image src="/brand/tela-logo.png" alt="Tasa" width={88} height={42} priority className="h-8 w-auto" />
       </Link>
 
       <div className="mt-10 w-full max-w-md rounded-[2rem] bg-white p-8 text-center shadow-xl shadow-brand-deep/5 ring-1 ring-line">
         {group ? (
           <>
             {group.logoUrl ? (
-              // A group's own picture, from Tela's storage: shown as-is.
+              // A group's own picture, from Tasa's storage: shown as-is.
               // eslint-disable-next-line @next/next/no-img-element
               <img src={group.logoUrl} alt="" className="mx-auto h-20 w-20 rounded-2xl object-cover ring-1 ring-line" />
             ) : (
@@ -69,7 +69,7 @@ export default async function InvitePage({ params }: Props) {
             <p className="mt-6 text-sm text-ink-muted">You’ve been invited to join</p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-brand-deep">{group.name}</h1>
             <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-              Members pay their dues on Tela.{group.requireApproval ? ' An executive approves each person who joins.' : ''}
+              Members pay their dues on Tasa.{group.requireApproval ? ' An executive approves each person who joins.' : ''}
             </p>
           </>
         ) : (
@@ -77,7 +77,7 @@ export default async function InvitePage({ params }: Props) {
             <span className="mx-auto grid h-20 w-20 place-items-center rounded-2xl bg-mint text-brand">
               <UsersRound className="h-9 w-9" aria-hidden />
             </span>
-            <h1 className="mt-6 text-2xl font-semibold tracking-tight text-brand-deep">Join a group on Tela</h1>
+            <h1 className="mt-6 text-2xl font-semibold tracking-tight text-brand-deep">Join a group on Tasa</h1>
             <p className="mt-3 text-sm leading-relaxed text-ink-muted">
               We couldn’t look this invite up right now. If the code below doesn’t work in the app, ask the person who sent it for a new link.
             </p>
@@ -90,15 +90,15 @@ export default async function InvitePage({ params }: Props) {
         </div>
 
         <a href={openInApp} className="mt-6 block rounded-2xl bg-brand px-5 py-3.5 font-semibold text-white transition hover:bg-brand-deep">
-          Open in Tela
+          Open in Tasa
         </a>
-        <p className="mt-3 text-xs text-ink-subtle">Already have Tela? This opens the group so you can read its terms and join.</p>
+        <p className="mt-3 text-xs text-ink-subtle">Already have Tasa? This opens the group so you can read its terms and join.</p>
       </div>
 
       <div className="mt-10 w-full max-w-md">
-        <p className="text-center text-sm font-semibold text-brand-deep">New to Tela?</p>
+        <p className="text-center text-sm font-semibold text-brand-deep">New to Tasa?</p>
         <ol className="mt-4 space-y-3 text-sm text-ink-muted">
-          {['Install Tela and sign up with your phone number.', 'Come back to this link and tap “Open in Tela”.', 'Or open Groups in the app and enter the code above.'].map((step, i) => (
+          {['Install Tasa and sign up with your phone number.', 'Come back to this link and tap “Open in Tasa”.', 'Or open Groups in the app and enter the code above.'].map((step, i) => (
             <li key={step} className="flex gap-3">
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mint text-xs font-semibold text-brand">{i + 1}</span>
               <span className="leading-relaxed">{step}</span>
