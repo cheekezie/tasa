@@ -33,8 +33,8 @@ export const PaginationQuerySchema = z.object({
 });
 
 /** Same ids as the app's ServiceId. Data bundles are `airtime` with `product: 'data'`. */
-export const SERVICE_IDS = ['electricity', 'airtime', 'tv', 'water', 'internet', 'jamb'] as const;
-export type ServiceId = (typeof SERVICE_IDS)[number];
+import { SERVICE_IDS, type ServiceId } from '@tasa/contracts/enums';
+export { SERVICE_IDS, type ServiceId };
 export const ServiceIdSchema = z.enum(SERVICE_IDS);
 
 /**

@@ -1,0 +1,18 @@
+# HTTPS certificates are issued and renewed automatically for each domain.
+{$API_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy api:4110
+}
+
+{$WEB_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy web:3000
+}
+
+# The admin is a single-page app: unknown paths fall back to index.html.
+{$ADMIN_DOMAIN} {
+	encode zstd gzip
+	root * /srv/admin
+	try_files {path} /index.html
+	file_server
+}

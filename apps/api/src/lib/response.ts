@@ -2,8 +2,8 @@ import type { FastifyReply } from 'fastify';
 import type { ZodType } from 'zod';
 import { AppError } from './errors';
 
-export type ApiSuccess<T> = { success: true; statusCode: number; message?: string; data: T };
-export type Paginated<T> = { items: T[]; page: number; limit: number; total: number; totalPages: number };
+import type { ApiSuccess, Paginated } from '@tasa/contracts/common';
+export type { ApiSuccess, Paginated };
 
 export function send<T>(reply: FastifyReply, data: T, statusCode = 200, message?: string) {
   const body: ApiSuccess<T> = { success: true, statusCode, data };

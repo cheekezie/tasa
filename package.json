@@ -1,0 +1,29 @@
+{
+  "name": "tasa",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.27.0",
+  "engines": { "node": ">=22.0.0", "pnpm": ">=10.0.0" },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "dev:api": "turbo dev --filter @tasa/api",
+    "dev:mobile": "pnpm --filter @tasa/mobile start",
+    "dev:admin": "turbo dev --filter @tasa/admin",
+    "dev:web": "turbo dev --filter @tasa/web",
+    "build:api": "turbo build --filter @tasa/api",
+    "build:admin": "turbo build --filter @tasa/admin",
+    "build:web": "turbo build --filter @tasa/web",
+    "start:api": "pnpm --filter @tasa/api start",
+    "start:web": "pnpm --filter @tasa/web start",
+    "db:local": "pnpm --filter @tasa/api db:local",
+    "seed": "pnpm --filter @tasa/api seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.9.2"
+  }
+}

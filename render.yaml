@@ -1,0 +1,100 @@
+# Render Blueprint — the interim home until the droplet (deploy/droplet). New → Blueprint → this repo.
+# MongoDB isn't offered by Render: use MongoDB Atlas (a replica set, which the wallet's
+# transactions need) and paste its URI into MONGODB_URI. Values marked `sync: false` are
+# entered in the dashboard on first deploy; the full list is apps/api/.env.example.
+services:
+  - type: web
+    name: tasa-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    buildFilter:
+      paths: [apps/api/**, packages/contracts/**, packages/config/**, pnpm-lock.yaml]
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService: { type: keyvalue, name: tasa-redis, property: connectionString }
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false # 64 hex chars: openssl rand -hex 32. Never regenerate once data exists.
+      - key: CF_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+      - key: SAYSWITCH_SECRET_KEY
+        sync: false
+      - key: SAYSWITCH_PUBLIC_KEY
+        sync: false
+      - key: VTPASS_BASE_URL
+        sync: false
+      - key: VTPASS_API_KEY
+        sync: false
+      - key: VTPASS_PUBLIC_KEY
+        sync: false
+      - key: VTPASS_SECRET_KEY
+        sync: false
+      - key: TERMII_API_KEY
+        sync: false
+      - key: ZEPTOMAIL_TOKEN
+        sync: false
+      - key: BUSINESS_PHONE
+        sync: false
+      - key: SITE_URL
+        sync: false
+
+  - type: keyvalue
+    name: tasa-redis
+    plan: starter
+    region: frankfurt
+    # BullMQ queues must never be evicted.
+    maxmemoryPolicy: noeviction
+    ipAllowList: []
+
+  - type: web
+    name: tasa-web
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo build --filter @tasa/web
+    startCommand: pnpm --filter @tasa/web start
+    buildFilter:
+      paths: [apps/web/**, packages/contracts/**, pnpm-lock.yaml]
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+
+  - type: web
+    name: tasa-admin
+    runtime: static
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo build --filter @tasa/admin
+    staticPublishPath: ./apps/admin/dist
+    buildFilter:
+      paths: [apps/admin/**, packages/contracts/**, pnpm-lock.yaml]
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: VITE_API_URL
+        sync: false

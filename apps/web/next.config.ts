@@ -2,8 +2,15 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  // Workspace packages ship TypeScript source.
+  transpilePackages: ["@tasa/contracts"],
+  // The Docker image (droplet) runs the standalone server; Render/Railway run `next start`.
+  ...(process.env.NEXT_OUTPUT === 'standalone'
+    ? { output: 'standalone' as const, outputFileTracingRoot: path.resolve(__dirname, '../..') }
+    : {}),
   turbopack: {
-    root: path.resolve(__dirname),
+    // The monorepo root: pnpm keeps packages in ../../node_modules/.pnpm.
+    root: path.resolve(__dirname, '../..'),
     resolveAlias: {
       '@swc/helpers-6be8479ad4112b8f': '@swc/helpers',
     },

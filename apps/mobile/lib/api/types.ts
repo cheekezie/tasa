@@ -4,15 +4,7 @@ import { RecurringFrequency } from '@/constants/data';
 import { ServiceId } from '@/constants/theme';
 import { Kobo } from '@/lib/money';
 
-export type Paginated<T> = {
-  items: T[];
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-};
-
-export type ContactInput = { type: 'phone' | 'email'; value: string };
+export type { ContactInput, Paginated } from '@tasa/contracts/common';
 export type RecipientInput = { type: 'username' | 'phone' | 'email'; value: string };
 
 export type OtpSentDto = { channel: string; expiresInSeconds: number; resendInSeconds: number };

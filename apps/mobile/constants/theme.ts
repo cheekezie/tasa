@@ -92,13 +92,7 @@ export const theme = {
   },
 } as const;
 
-export type ServiceId =
-  | 'electricity'
-  | 'airtime'
-  | 'tv'
-  | 'water'
-  | 'internet'
-  | 'jamb';
+export type { ServiceId } from '@tasa/contracts/enums';
 
 // Like a CSS breakpoint: headings and big figures shrink on narrow phones,
 // while body text (under 18) keeps its size for readability.

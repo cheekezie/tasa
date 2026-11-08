@@ -1,0 +1,23 @@
+{
+  "name": "@tasa/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared by the API and every client: enums, money (kobo), the response envelope. Ships TypeScript source — no build step.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./common": "./src/common.ts",
+    "./enums": "./src/enums.ts",
+    "./money": "./src/money.ts"
+  },
+  "dependencies": { "zod": "^4.1.0" },
+  "devDependencies": {
+    "@tasa/config": "workspace:*",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

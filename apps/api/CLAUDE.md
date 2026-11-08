@@ -1,6 +1,6 @@
 # Tasa API — working conventions
 
-Backend for the Tasa app (`../tela`, Expo). Read `docs/architecture.md` before changing money logic.
+Backend for the Tasa app (`../mobile`, Expo) in the `tasa` monorepo. Shared enums, money and the response envelope live in `packages/contracts` — change them there, not here. Read `docs/architecture.md` before changing money logic.
 
 ## Layout
 

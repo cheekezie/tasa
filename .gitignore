@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.next/
+.turbo/
+.expo/
+web-build/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.data/
+.DS_Store
+coverage/
+# Expo prebuild output
+apps/mobile/ios/
+apps/mobile/android/
+deploy/droplet/*.env
+!deploy/droplet/*.env.example
+deploy/droplet/backups/

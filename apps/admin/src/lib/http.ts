@@ -103,4 +103,4 @@ function clean(params?: Record<string, unknown>) {
 }
 
 /** A page of results, as every admin list returns them. */
-export type Paginated<T> = { items: T[]; page: number; limit: number; total: number; totalPages: number };
+export type { Paginated } from "@tasa/contracts/common";

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "pnpm turbo build --filter @tasa/web",
+    "watchPatterns": ["apps/web/**", "packages/contracts/**", "pnpm-lock.yaml"]
+  },
+  "deploy": { "startCommand": "pnpm --filter @tasa/web start", "restartPolicyType": "ON_FAILURE" }
+}
