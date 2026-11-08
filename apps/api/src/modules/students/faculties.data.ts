@@ -1,0 +1,116 @@
+/**
+ * The faculties and departments most Nigerian universities share, offered to students whose
+ * school hasn't got its own list on Tasa yet. Staff replace it school by school in the back
+ * office; what students type when their department isn't listed shows there too, to add.
+ */
+export const GENERAL_FACULTIES: { name: string; departments: string[] }[] = [
+  {
+    name: 'Agriculture',
+    departments: [
+      'Agricultural Economics',
+      'Agricultural Extension',
+      'Agronomy',
+      'Animal Science',
+      'Crop Science',
+      'Fisheries and Aquaculture',
+      'Food Science and Technology',
+      'Forestry and Wildlife',
+      'Soil Science',
+    ],
+  },
+  {
+    name: 'Arts',
+    departments: [
+      'English',
+      'Linguistics',
+      'History and International Studies',
+      'Philosophy',
+      'Religious Studies',
+      'Theatre Arts',
+      'Music',
+      'French',
+      'Arabic',
+      'Igbo',
+      'Yoruba',
+      'Hausa',
+      'Fine and Applied Arts',
+      'Mass Communication',
+    ],
+  },
+  { name: 'Basic Medical Sciences', departments: ['Anatomy', 'Physiology', 'Medical Biochemistry', 'Pharmacology'] },
+  {
+    name: 'Clinical Sciences',
+    departments: ['Medicine and Surgery', 'Dentistry', 'Nursing Science', 'Medical Laboratory Science', 'Radiography', 'Physiotherapy', 'Optometry', 'Public Health'],
+  },
+  {
+    name: 'Education',
+    departments: [
+      'Adult Education',
+      'Educational Management',
+      'Guidance and Counselling',
+      'Early Childhood Education',
+      'Science Education',
+      'Arts Education',
+      'Human Kinetics and Health Education',
+      'Library and Information Science',
+    ],
+  },
+  {
+    name: 'Engineering',
+    departments: [
+      'Agricultural Engineering',
+      'Chemical Engineering',
+      'Civil Engineering',
+      'Computer Engineering',
+      'Electrical and Electronics Engineering',
+      'Mechanical Engineering',
+      'Mechatronics Engineering',
+      'Metallurgical and Materials Engineering',
+      'Petroleum Engineering',
+      'Systems Engineering',
+    ],
+  },
+  {
+    name: 'Environmental Sciences',
+    departments: ['Architecture', 'Building', 'Estate Management', 'Quantity Surveying', 'Surveying and Geoinformatics', 'Urban and Regional Planning'],
+  },
+  { name: 'Law', departments: ['Law'] },
+  {
+    name: 'Management Sciences',
+    departments: [
+      'Accounting',
+      'Banking and Finance',
+      'Business Administration',
+      'Insurance',
+      'Marketing',
+      'Public Administration',
+      'Actuarial Science',
+      'Entrepreneurship',
+    ],
+  },
+  { name: 'Pharmacy', departments: ['Pharmacy'] },
+  {
+    name: 'Science',
+    departments: [
+      'Biochemistry',
+      'Botany',
+      'Chemistry',
+      'Computer Science',
+      'Geology',
+      'Industrial Chemistry',
+      'Mathematics',
+      'Microbiology',
+      'Physics',
+      'Statistics',
+      'Zoology',
+      'Cyber Security',
+      'Software Engineering',
+      'Information Technology',
+    ],
+  },
+  {
+    name: 'Social Sciences',
+    departments: ['Economics', 'Geography', 'Political Science', 'Psychology', 'Sociology', 'International Relations', 'Criminology', 'Social Work'],
+  },
+  { name: 'Veterinary Medicine', departments: ['Veterinary Medicine'] },
+];
