@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "packageManager": "pnpm@10.27.0",
-  "engines": { "node": ">=22.0.0", "pnpm": ">=10.0.0" },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -12,6 +15,8 @@
     "test": "turbo test",
     "dev:api": "turbo dev --filter @tasa/api",
     "dev:mobile": "pnpm --filter @tasa/mobile start",
+    "mobile:ios": "pnpm --filter @tasa/mobile ios",
+    "mobile:android": "pnpm --filter @tasa/mobile android",
     "dev:admin": "turbo dev --filter @tasa/admin",
     "dev:web": "turbo dev --filter @tasa/web",
     "build:api": "turbo build --filter @tasa/api",
