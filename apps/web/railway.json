@@ -3,7 +3,7 @@
   "build": {
     "builder": "RAILPACK",
     "buildCommand": "pnpm turbo build --filter @tasa/web",
-    "watchPatterns": ["apps/web/**", "packages/contracts/**", "pnpm-lock.yaml"]
+    "watchPatterns": ["apps/web/**", "packages/contracts/**"]
   },
   "deploy": { "startCommand": "pnpm --filter @tasa/web start", "restartPolicyType": "ON_FAILURE" }
 }

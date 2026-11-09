@@ -12,7 +12,7 @@ services:
     region: frankfurt
     healthCheckPath: /health
     buildFilter:
-      paths: [apps/api/**, packages/contracts/**, packages/config/**, pnpm-lock.yaml]
+      paths: [apps/api/**, packages/contracts/**, packages/config/**]
     envVars:
       - key: NODE_ENV
         value: production
@@ -73,7 +73,7 @@ services:
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo build --filter @tasa/web
     startCommand: pnpm --filter @tasa/web start
     buildFilter:
-      paths: [apps/web/**, packages/contracts/**, pnpm-lock.yaml]
+      paths: [apps/web/**, packages/contracts/**]
     envVars:
       - key: NODE_VERSION
         value: '22'
@@ -88,7 +88,7 @@ services:
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm turbo build --filter @tasa/admin
     staticPublishPath: ./apps/admin/dist
     buildFilter:
-      paths: [apps/admin/**, packages/contracts/**, pnpm-lock.yaml]
+      paths: [apps/admin/**, packages/contracts/**]
     routes:
       - type: rewrite
         source: /*

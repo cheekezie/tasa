@@ -3,7 +3,7 @@
   "build": {
     "builder": "RAILPACK",
     "buildCommand": "pnpm turbo build --filter @tasa/admin",
-    "watchPatterns": ["apps/admin/**", "packages/contracts/**", "pnpm-lock.yaml"]
+    "watchPatterns": ["apps/admin/**", "packages/contracts/**"]
   },
   "deploy": {
     "startCommand": "npx --yes serve@14 -s apps/admin/dist -l ${PORT:-3000}",
