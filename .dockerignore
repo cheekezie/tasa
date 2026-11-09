@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.expo
+**/.env
+**/.env.*
+!**/.env.example
+**/.data
+apps/mobile
+.git

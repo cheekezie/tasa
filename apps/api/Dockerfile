@@ -4,7 +4,8 @@
 # the build; the image holds the bundled server plus production dependencies, no source.
 
 FROM node:22-alpine AS build
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# The test-only MongoDB download (mongodb-memory-server) has no place in an image.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 MONGOMS_DISABLE_POSTINSTALL=1
 RUN corepack enable
 WORKDIR /repo
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
