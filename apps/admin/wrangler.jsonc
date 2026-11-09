@@ -1,0 +1,13 @@
+// Cloudflare (Workers static assets) for the admin. Built from the repo root:
+//   build:  pnpm turbo build --filter @tasa/admin
+//   deploy: npx wrangler deploy --config apps/admin/wrangler.jsonc
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "tasa-admin",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Browser routing: unknown paths get index.html instead of a 404.
+    "not_found_handling": "single-page-application"
+  }
+}
